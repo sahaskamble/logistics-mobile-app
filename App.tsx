@@ -10,6 +10,8 @@ import ServiceProvidersScreen from "./src/screens/ServiceProvidersScreen"
 import DashboardScreen from "./src/screens/DashboardScreen"
 import ProfileScreen from "./src/screens/ProfileScreen"
 import PriorityMovementScreen from "./src/screens/PriorityMovementScreen"
+import WeightmentSlipScreen from "./src/screens/WeightmentSlipScreen"
+import CreateWeightmentSlipScreen from "./src/screens/CreateWeightmentSlipScreen"
 
 const App = () => {
   const [isLoading, setIsLoading] = useState(true)
@@ -67,6 +69,16 @@ const App = () => {
         return <PriorityMovementScreen
           onNavigate={setCurrentScreen}
           onBack={() => setCurrentScreen("home")}
+        />
+      case "weightment-slip":
+        return <WeightmentSlipScreen
+          onNavigate={setCurrentScreen}
+          onBack={() => setCurrentScreen("home")}
+        />
+      case "create-weightment":
+        return <CreateWeightmentSlipScreen
+          onNavigate={setCurrentScreen}
+          onBack={() => setCurrentScreen("weightment-slip")}
         />
       default:
         return <HomeScreen onNavigate={setCurrentScreen} />

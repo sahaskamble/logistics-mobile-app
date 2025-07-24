@@ -118,48 +118,48 @@ const HomeScreen = ({ onNavigate, onLogout, onNavigateToPriorityMovement }: Home
         {/* Service Categories */}
         <View style={styles.servicesGrid}>
           <View style={styles.serviceRow}>
-            <TouchableOpacity style={styles.serviceCard} onPress={() => onNavigate("providers")}>
+            <TouchableOpacity style={styles.serviceCard} onPress={() => onNavigate("Transporttation")}>
               <View style={styles.serviceIcon}>
                 <Icon name="truck" size={32} color="#4A90E2" />
               </View>
               <Text style={styles.serviceTitle}>Transportation</Text>
               <Text style={styles.serviceSubtitle}>Fleet management</Text>
-              <TouchableOpacity style={styles.serviceButton} onPress={() => onNavigate("providers")}>
+              <TouchableOpacity style={styles.serviceButton} onPress={() => onNavigate("Transporttation")}>
                 <Text style={styles.serviceButtonText}>View services</Text>
               </TouchableOpacity>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.serviceCard} onPress={() => onNavigate("providers")}>
+            <TouchableOpacity style={styles.serviceCard} onPress={() => onNavigate("Warehouse")}>
               <View style={styles.serviceIcon}>
                 <Text style={styles.serviceIconText}>🏢</Text>
               </View>
               <Text style={styles.serviceTitle}>Warehouse</Text>
               <Text style={styles.serviceSubtitle}>Storage solutions</Text>
-              <TouchableOpacity style={styles.serviceButton} onPress={() => onNavigate("providers")}>
+              <TouchableOpacity style={styles.serviceButton} onPress={() => onNavigate("Warehouse")}>
                 <Text style={styles.serviceButtonText}>View Services</Text>
               </TouchableOpacity>
             </TouchableOpacity>
           </View>
 
           <View style={styles.serviceRow}>
-            <TouchableOpacity style={styles.serviceCard} onPress={() => onNavigate("providers")}>
+            <TouchableOpacity style={styles.serviceCard} onPress={() => onNavigate("CFS Services")}>
               <View style={styles.serviceIcon}>
                 <Text style={styles.serviceIconText}>📋</Text>
               </View>
               <Text style={styles.serviceTitle}>CFS Services</Text>
               <Text style={styles.serviceSubtitle}>Container handling</Text>
-              <TouchableOpacity style={styles.serviceButton} onPress={() => onNavigate("providers")}>
+              <TouchableOpacity style={styles.serviceButton} onPress={() => onNavigate("CFS Services")}>
                 <Text style={styles.serviceButtonText}>View Services</Text>
               </TouchableOpacity>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.serviceCard} onPress={() => onNavigate("providers")}>
+            <TouchableOpacity style={styles.serviceCard} onPress={() => onNavigate("3PL Services")}>
               <View style={styles.serviceIcon}>
                 <Text style={styles.serviceIconText}>👥</Text>
               </View>
               <Text style={styles.serviceTitle}>3PL Services</Text>
               <Text style={styles.serviceSubtitle}>Logistics solutions</Text>
-              <TouchableOpacity style={styles.serviceButton} onPress={() => onNavigate("providers")}>
+              <TouchableOpacity style={styles.serviceButton} onPress={() => onNavigate("3PL Services")}>
                 <Text style={styles.serviceButtonText}>View Services</Text>
               </TouchableOpacity>
             </TouchableOpacity>
@@ -189,6 +189,8 @@ const HomeScreen = ({ onNavigate, onLogout, onNavigateToPriorityMovement }: Home
                 onPress={() => {
                   if (item.title === "Priority Movement" && onNavigateToPriorityMovement) {
                     onNavigateToPriorityMovement()
+                  } else if (item.title === "Weightment Slip") {
+                    onNavigate("weightment-slip")
                   }
                 }}
               >
