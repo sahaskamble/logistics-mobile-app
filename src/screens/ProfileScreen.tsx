@@ -28,7 +28,6 @@ const ProfileScreen = ({ onNavigate }: ProfileScreenProps) => {
 
   const recentActivity = [
     { action: "Order Completed", details: "Container #LC78452", time: "2 hours ago", status: "success" },
-    { action: "Payment Processed", details: "Invoice #INV-2024-001", time: "1 day ago", status: "success" },
     { action: "Profile Updated", details: "Contact information", time: "3 days ago", status: "info" }
   ]
 
@@ -96,7 +95,7 @@ const ProfileScreen = ({ onNavigate }: ProfileScreenProps) => {
               </View>
               <Text style={styles.quickActionText}>Contact</Text>
             </TouchableOpacity>
-            
+                                
             <TouchableOpacity style={styles.quickActionCard}>
               <View style={[styles.quickActionIcon, { backgroundColor: "#FFF3E0" }]}>
                 <Text style={styles.quickActionIconText}>⚙️</Text>
@@ -118,7 +117,7 @@ const ProfileScreen = ({ onNavigate }: ProfileScreenProps) => {
                 <Text style={styles.menuTitle}>{item.title}</Text>
                 <Text style={styles.menuSubtitle}>{item.subtitle}</Text>
               </View>
-              <Icon name="chevron-right" size={20} color="#999" />
+              <Icon name="arrowright" size={20} color="#454" />
             </TouchableOpacity>
           ))}
         </View>
@@ -143,7 +142,7 @@ const ProfileScreen = ({ onNavigate }: ProfileScreenProps) => {
 
         {/* Logout Button */}
         <TouchableOpacity style={styles.logoutButton}>
-          <Icon name="log-out" size={20} color="#F44336" />
+          <Icon name="logout" size={20} color="#F44336" />
           <Text style={styles.logoutText}>Sign Out</Text>
         </TouchableOpacity>
       </ScrollView>

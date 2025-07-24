@@ -1,4 +1,5 @@
 import { View, Text, StyleSheet, ActivityIndicator } from "react-native"
+import Icon from "../components/Icon"
 
 const SplashScreen = () => {
   return (
@@ -12,6 +13,12 @@ const SplashScreen = () => {
               <View style={styles.dot2} />
               <View style={styles.dot3} />
               <View style={styles.dot4} />
+            </View>
+          </View>
+          {/* Track Icon in Circle */}
+          <View style={styles.trackIconContainer}>
+            <View style={styles.trackIconCircle}>
+              <Icon name="truck" size={32} color="#4A90E2" />
             </View>
           </View>
         </View>
@@ -137,6 +144,26 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     fontSize: 14,
     color: "#666",
+  },
+  trackIconContainer: {
+    position: "absolute",
+    bottom: -15,
+    right: -2,
+  },
+  trackIconCircle: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: "white",
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#4A90E2",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+    borderWidth: 2,
+    borderColor: "#E8F4FD",
   },
 })
 

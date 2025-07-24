@@ -1,18 +1,21 @@
 "use client"
 
-import React, { useState } from "react"
+import { useState } from "react"
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions } from "react-native"
 import Icon from "../components/Icon"
+import Sidebar from "../components/Sidebar"
 
 interface DashboardScreenProps {
   onNavigate: (screen: string) => void
+  onLogout?: () => void
 }
 
 const { width } = Dimensions.get('window')
 
-const DashboardScreen = ({ onNavigate }: DashboardScreenProps) => {
+const DashboardScreen = ({ onNavigate, onLogout }: DashboardScreenProps) => {
   const [selectedPeriod, setSelectedPeriod] = useState("month")
   const [showDropdown, setShowDropdown] = useState(false)
+  const [sidebarVisible, setSidebarVisible] = useState(false)
 
   const statsData = [
     {
@@ -76,9 +79,27 @@ const DashboardScreen = ({ onNavigate }: DashboardScreenProps) => {
 
   const periodOptions = [
     { label: "Week", value: "week" },
-    { label: "Month", value: "month" },
+    { label: "month", value: "month" },
     { label: "Year", value: "year" }
   ]
+
+  const handleSidebarToggle = () => {
+    setSidebarVisible(!sidebarVisible)
+  }
+
+  const handleSidebarClose = () => {
+    setSidebarVisible(false)
+  }
+
+  const handleSidebarNavigate = (screen: string) => {
+    onNavigate(screen)
+  }
+
+  const handleLogout = () => {
+    if (onLogout) {
+      onLogout()
+    }
+  }
 
   const latestRequests = [
     {
@@ -237,7 +258,9 @@ const DashboardScreen = ({ onNavigate }: DashboardScreenProps) => {
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerTop}>
-          <Icon name="menu" size={24} color="white" />
+          <TouchableOpacity onPress={handleSidebarToggle}>
+            <Icon name="menu" size={24} color="white" />
+          </TouchableOpacity>
           <Text style={styles.headerTitle}>Dashboard</Text>
           <View style={styles.headerIcons}>
             <TouchableOpacity style={styles.notificationButton}>
@@ -402,6 +425,14 @@ const DashboardScreen = ({ onNavigate }: DashboardScreenProps) => {
           <Text style={styles.navText}>Profile</Text>
         </TouchableOpacity>
       </View>
+
+      {/* Sidebar */}
+      <Sidebar
+        isVisible={sidebarVisible}
+        onClose={handleSidebarClose}
+        onNavigate={handleSidebarNavigate}
+        onLogout={handleLogout}
+      />
     </View>
   )
 }

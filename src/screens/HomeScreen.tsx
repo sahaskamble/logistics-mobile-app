@@ -1,45 +1,50 @@
 "use client"
 
+import { useState } from "react"
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from "react-native"
 import Icon from "../components/Icon"
+import Sidebar from "../components/Sidebar"
 
 interface HomeScreenProps {
   onNavigate: (screen: string) => void
+  onLogout?: () => void
+  onNavigateToPriorityMovement?: () => void
 }
 
-const HomeScreen = ({ onNavigate }: HomeScreenProps) => {
+const HomeScreen = ({ onNavigate, onLogout, onNavigateToPriorityMovement }: HomeScreenProps) => {
+  const [sidebarVisible, setSidebarVisible] = useState(false)
   const quickAccessItems = [
     {
       id: 1,
       title: "Priority Movement",
       subtitle: "Express handling",
-      icon: "🏃",
-      color: "#FFF3E0",
-      iconBg: "#FF9800"
+      icon: "🚛",
+      gradient: ["#FF9800", "#FFB74D"],
+      shadowColor: "#FF9800"
     },
     {
       id: 2,
       title: "Weightment Slip",
       subtitle: "Weight verification",
       icon: "⚖️",
-      color: "#E8F5E8",
-      iconBg: "#4CAF50"
+      gradient: ["#4CAF50", "#66BB6A"],
+      shadowColor: "#4CAF50"
     },
     {
       id: 3,
       title: "Re-scanning",
       subtitle: "Quality check",
       icon: "🔄",
-      color: "#E3F2FD",
-      iconBg: "#2196F3"
+      gradient: ["#2196F3", "#42A5F5"],
+      shadowColor: "#2196F3"
     },
     {
       id: 4,
       title: "Container Staging",
       subtitle: "Setup & placement",
-      icon: "📦",
-      color: "#F3E5F5",
-      iconBg: "#9C27B0"
+      icon: "🗳️",
+      gradient: ["#9C27B0", "#BA68C8"],
+      shadowColor: "#9C27B0"
     }
   ]
 
@@ -60,14 +65,34 @@ const HomeScreen = ({ onNavigate }: HomeScreenProps) => {
     }
   ]
 
+  const handleSidebarToggle = () => {
+    setSidebarVisible(!sidebarVisible)
+  }
+
+  const handleSidebarClose = () => {
+    setSidebarVisible(false)
+  }
+
+  const handleSidebarNavigate = (screen: string) => {
+    onNavigate(screen)
+  }
+
+  const handleLogout = () => {
+    if (onLogout) {
+      onLogout()
+    }
+  }
+
   return (
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerTop}>
-          <Icon name="menu" size={24} color="white" />
+          <TouchableOpacity onPress={handleSidebarToggle}>
+            <Icon name="menu" size={24} color="white" />
+          </TouchableOpacity>
           <View style={styles.headerContent}>
-            <Text style={styles.appName}>Link LOGISTICS</Text>
+            <Text style={styles.appName}>LINK MY LOGISTICS</Text>
             <Text style={styles.welcomeText}>Welcome, Devanshul</Text>
           </View>
           <View style={styles.headerIcons}>
@@ -84,9 +109,9 @@ const HomeScreen = ({ onNavigate }: HomeScreenProps) => {
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Main Question */}
         <View style={styles.questionSection}>
-          <Text style={styles.questionText}>What would you like to manage today?</Text>
+          <Text style={styles.questionText}>What would you like to manage today ?</Text>
           <TouchableOpacity onPress={() => onNavigate("providers")}>
-            <Text style={styles.servicesLink}>services</Text>
+            <Text style={styles.servicesLink}></Text> 
           </TouchableOpacity>
         </View>
 
@@ -152,8 +177,30 @@ const HomeScreen = ({ onNavigate }: HomeScreenProps) => {
 
           <View style={styles.quickAccessGrid}>
             {quickAccessItems.map((item) => (
-              <TouchableOpacity key={item.id} style={[styles.quickAccessCard, { backgroundColor: item.color }]}>
-                <View style={[styles.quickAccessIcon, { backgroundColor: item.iconBg }]}>
+              <TouchableOpacity
+                key={item.id}
+                style={[
+                  styles.quickAccessCard,
+                  {
+                    backgroundColor: item.gradient[0],
+                    shadowColor: item.shadowColor,
+                  }
+                ]}
+                onPress={() => {
+                  if (item.title === "Priority Movement" && onNavigateToPriorityMovement) {
+                    onNavigateToPriorityMovement()
+                  }
+                }}
+              >
+                {/* Gradient overlay effect */}
+                <View style={[
+                  styles.gradientOverlay,
+                  {
+                    backgroundColor: item.gradient[1],
+                  }
+                ]} />
+
+                <View style={[styles.quickAccessIcon, { backgroundColor: 'rgba(255,255,255,0.9)' }]}>
                   <Text style={styles.quickAccessIconText}>{item.icon}</Text>
                 </View>
                 <Text style={styles.quickAccessTitle}>{item.title}</Text>
@@ -208,6 +255,14 @@ const HomeScreen = ({ onNavigate }: HomeScreenProps) => {
           <Text style={styles.navText}>Profile</Text>
         </TouchableOpacity>
       </View>
+
+      {/* Sidebar */}
+      <Sidebar
+        isVisible={sidebarVisible}
+        onClose={handleSidebarClose}
+        onNavigate={handleSidebarNavigate}
+        onLogout={handleLogout}
+      />
     </View>
   )
 }
@@ -365,33 +420,70 @@ const styles = StyleSheet.create({
   },
   quickAccessCard: {
     width: "48%",
-    borderRadius: 12,
-    padding: 15,
-    marginBottom: 10,
+    borderRadius: 16,
+    padding: 18,
+    marginBottom: 15,
     alignItems: "center",
+    position: "relative",
+    overflow: "hidden",
+    shadowOffset: {
+      width: 0,
+      height: 6,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 12,
+    elevation: 10,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.3)",
+  },
+  gradientOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    opacity: 0.6,
+    borderRadius: 16,
   },
   quickAccessIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 10,
+    marginBottom: 12,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 6,
+    zIndex: 2,
   },
   quickAccessIconText: {
     fontSize: 20,
   },
   quickAccessTitle: {
     fontSize: 14,
-    fontWeight: "600",
-    color: "#333",
+    fontWeight: "700",
+    color: "white",
     textAlign: "center",
-    marginBottom: 5,
+    marginBottom: 6,
+    zIndex: 2,
+    textShadowColor: "rgba(0,0,0,0.3)",
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
   },
   quickAccessSubtitle: {
     fontSize: 12,
-    color: "#666",
+    color: "rgba(255,255,255,0.9)",
     textAlign: "center",
+    zIndex: 2,
+    textShadowColor: "rgba(0,0,0,0.2)",
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 1,
   },
   recentOrdersSection: {
     paddingHorizontal: 20,
