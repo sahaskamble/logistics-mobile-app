@@ -1,8 +1,10 @@
 "use client"
 
-import React, { useState } from "react"
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Animated } from "react-native"
+import { useState, useEffect, useRef } from "react"
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Dimensions, Animated } from "react-native"
 import Icon from "./Icon"
+
+const { width: screenWidth } = Dimensions.get('window')
 
 interface SidebarProps {
   isVisible: boolean
@@ -21,41 +23,44 @@ interface MenuItem {
 
 const Sidebar = ({ isVisible, onClose, onNavigate, onLogout }: SidebarProps) => {
   const [expandedItems, setExpandedItems] = useState<string[]>([])
+  const slideAnim = useRef(new Animated.Value(-300)).current
+  const backdropAnim = useRef(new Animated.Value(0)).current
+
+  useEffect(() => {
+    if (isVisible) {
+      Animated.parallel([
+        Animated.timing(slideAnim, {
+          toValue: 0,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+        Animated.timing(backdropAnim, {
+          toValue: 1,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+      ]).start()
+    } else {
+      Animated.parallel([
+        Animated.timing(slideAnim, {
+          toValue: -300,
+          duration: 250,
+          useNativeDriver: true,
+        }),
+        Animated.timing(backdropAnim, {
+          toValue: 0,
+          duration: 250,
+          useNativeDriver: true,
+        }),
+      ]).start()
+    }
+  }, [isVisible, slideAnim, backdropAnim])
 
   const menuItems: MenuItem[] = [
-    {
-      id: "home",
-      title: "Home",
-      icon: "home"
-    },
     {
       id: "dashboard",
       title: "Dashboard",
       icon: "dashboard"
-    },
-    {
-      id: "cfs",
-      title: "CFS Services",
-      icon: "cfs",
-      hasDropdown: true,
-      dropdownItems: [
-        { id: "cfs-import", title: "Import Services" },
-        { id: "cfs-export", title: "Export Services" },
-        { id: "cfs-storage", title: "Storage Services" },
-        { id: "cfs-handling", title: "Cargo Handling" }
-      ]
-    },
-    {
-      id: "transport",
-      title: "Transport",
-      icon: "transport",
-      hasDropdown: true,
-      dropdownItems: [
-        { id: "transport-road", title: "Road Transport" },
-        { id: "transport-rail", title: "Rail Transport" },
-        { id: "transport-air", title: "Air Transport" },
-        { id: "transport-sea", title: "Sea Transport" }
-      ]
     },
     {
       id: "warehouse",
@@ -63,45 +68,92 @@ const Sidebar = ({ isVisible, onClose, onNavigate, onLogout }: SidebarProps) => 
       icon: "warehouse",
       hasDropdown: true,
       dropdownItems: [
-        { id: "warehouse-storage", title: "Storage Management" },
-        { id: "warehouse-inventory", title: "Inventory Control" },
-        { id: "warehouse-distribution", title: "Distribution" },
-        { id: "warehouse-fulfillment", title: "Order Fulfillment" }
+        { id: "my-order", title: "My Order" },
+        { id: "service-request", title: "Service Request" },
+        { id: "pricing-request", title: "Pricing Request" },
+        { id: "track-trace", title: "Track & Trace" },
+        { id: "priority-movement", title: "Priority Movement" },
+        { id: "weightment-slip", title: "Weightment Slip" },
+        { id: "container-grounding", title: "Container Grounding" },
+        { id: "rescanning", title: "Re-scanning" },
+        { id: "tax-invoice", title: "Tax Invoice" },
+        { id: "eir-request", title: "EIR Request" },
+        { id: "special-equipment", title: "Special Equipment" },
+        { id: "job-order-update", title: "Job Order Update" },
+        { id: "cheque-acceptance", title: "Cheque Acceptance" },
+        { id: "container-staging", title: "Container Staging" },
+        { id: "proforma-invoice", title: "Proforma Invoice" }
+      ]
+    },
+    {
+      id: "cfs",
+      title: "CFS",
+      icon: "cfs",
+      hasDropdown: true,
+      dropdownItems: [
+        { id: "tariff-upload", title: "Tariff Upload" },
+        { id: "cfs-import", title: "Import Services" },
+        { id: "cfs-export", title: "Export Services" },
+        { id: "cfs-storage", title: "Storage Services" },
+        { id: "cfs-handling", title: "Cargo Handling" },
+        { id: "container-inventory", title: "Container Inventory" },
+        { id: "container-tracking", title: "Container Tracking" },
+        { id: "container-maintenance", title: "Container Maintenance" }
+      ]
+    },
+    {
+      id: "transportation",
+      title: "Transportation",
+      icon: "transport",
+      hasDropdown: true,
+      dropdownItems: [
+        { id: "transport-booking", title: "Transport Booking" },
+        { id: "vehicle-tracking", title: "Vehicle Tracking" },
+        { id: "route-planning", title: "Route Planning" },
+        { id: "driver-management", title: "Driver Management" }
       ]
     },
     {
       id: "3pl",
       title: "3PL",
-      icon: "3pl",
+      icon: "handshake",
       hasDropdown: true,
       dropdownItems: [
         { id: "3pl-logistics", title: "Logistics Management" },
         { id: "3pl-supply", title: "Supply Chain" },
-        { id: "3pl-distribution", title: "Distribution Network" },
-        { id: "3pl-consulting", title: "Consulting Services" }
+        { id: "3pl-distribution", title: "Distribution Network" }
       ]
     },
     {
       id: "customs",
       title: "Customs",
-      icon: "customs",
+      icon: "container",
       hasDropdown: true,
       dropdownItems: [
         { id: "customs-clearance", title: "Customs Clearance" },
-        { id: "customs-documentation", title: "Documentation" },
-        { id: "customs-compliance", title: "Compliance" },
-        { id: "customs-consultation", title: "Consultation" }
+        { id: "documentation", title: "Documentation" },
+        { id: "compliance-check", title: "Compliance Check" }
       ]
     },
     {
-      id: "container",
+      id: "container-management",
       title: "Container Management",
-      icon: "container"
+      icon: "filetext"
     },
     {
       id: "notifications",
-      title: "Notifications",
+      title: "Notification & Updates",
       icon: "notifications"
+    },
+    {
+      id: "profile-update",
+      title: "Profile Update",
+      icon: "user"
+    },
+    {
+      id: "chat-page",
+      title: "Chat Page",
+      icon: "chat"
     },
     {
       id: "support",
@@ -127,45 +179,66 @@ const Sidebar = ({ isVisible, onClose, onNavigate, onLogout }: SidebarProps) => 
     }
   }
 
-  const handleDropdownItemPress = (parentId: string, itemId: string) => {
+  const handleDropdownItemPress = (_parentId: string, itemId: string) => {
     onNavigate(itemId)
     onClose()
   }
 
-  if (!isVisible) return null
-
   return (
-    <View style={styles.overlay}>
-      <TouchableOpacity style={styles.backdrop} onPress={onClose} />
-      <View style={styles.sidebar}>
-        {/* Header */}
-        <View style={styles.header}>
-          <View style={styles.headerContent}>
-            <Text style={styles.headerTitle}>Link My Logistics</Text>
-            <Text style={styles.headerSubtitle}>Navigation Menu</Text>
-          </View>
-          <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-            <Icon name="close" size={20} color="#666" />
-          </TouchableOpacity>
-        </View>
+    <View style={[styles.overlay, { display: isVisible ? 'flex' : 'none' }]}>
+      <Animated.View
+        style={[
+          styles.backdrop,
+          {
+            opacity: backdropAnim,
+          }
+        ]}
+      >
+        <TouchableOpacity
+          style={StyleSheet.absoluteFillObject}
+          onPress={onClose}
+          activeOpacity={1}
+        />
+      </Animated.View>
+      <Animated.View
+        style={[
+          styles.sidebar,
+          {
+            transform: [{ translateX: slideAnim }],
+          }
+        ]}
+      >
+
 
         {/* Menu Items */}
         <ScrollView style={styles.menuContainer} showsVerticalScrollIndicator={false}>
           {menuItems.map((item) => (
             <View key={item.id}>
               <TouchableOpacity
-                style={styles.menuItem}
+                style={[
+                  styles.menuItem,
+                  item.id === 'warehouse' && styles.highlightMenuItem
+                ]}
                 onPress={() => handleItemPress(item)}
               >
                 <View style={styles.menuItemContent}>
-                  <Icon name={item.icon} size={20} color="#4A90E2" />
-                  <Text style={styles.menuItemText}>{item.title}</Text>
+                  <Icon
+                    name={item.icon}
+                    size={20}
+                    color={item.id === 'warehouse' ? 'white' : '#4A90E2'}
+                  />
+                  <Text style={[
+                    styles.menuItemText,
+                    item.id === 'warehouse' && styles.highlightMenuItemText
+                  ]}>
+                    {item.title}
+                  </Text>
                 </View>
                 {item.hasDropdown && (
-                  <Icon 
-                    name={expandedItems.includes(item.id) ? "chevronup" : "chevrondown"} 
-                    size={16} 
-                    color="#666" 
+                  <Icon
+                    name={expandedItems.includes(item.id) ? "chevronup" : "chevrondown"}
+                    size={16}
+                    color={item.id === 'warehouse' ? 'white' : '#666'}
                   />
                 )}
               </TouchableOpacity>
@@ -193,7 +266,7 @@ const Sidebar = ({ isVisible, onClose, onNavigate, onLogout }: SidebarProps) => 
             <Text style={styles.logoutText}>Logout</Text>
           </TouchableOpacity>
         </ScrollView>
-      </View>
+      </Animated.View>
     </View>
   )
 }
@@ -206,64 +279,48 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     zIndex: 1000,
-    flexDirection: "row",
   },
   backdrop: {
-    flex: 1,
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   sidebar: {
-    width: 280,
+    position: "absolute",
+    top: 0,
+    left: 0,
+    bottom: 0,
+    width: Math.min(300, screenWidth * 0.85),
     backgroundColor: "white",
     shadowColor: "#000",
     shadowOffset: { width: 2, height: 0 },
     shadowOpacity: 0.25,
     shadowRadius: 10,
     elevation: 16,
+    zIndex: 1001,
   },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: 20,
-    paddingTop: 60,
-    backgroundColor: "#4A90E2",
-    borderBottomWidth: 1,
-    borderBottomColor: "rgba(255, 255, 255, 0.2)",
-  },
-  headerContent: {
-    flex: 1,
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "white",
-    marginBottom: 4,
-  },
-  headerSubtitle: {
-    fontSize: 12,
-    color: "rgba(255, 255, 255, 0.8)",
-  },
-  closeButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: "rgba(255, 255, 255, 0.2)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
+
   menuContainer: {
     flex: 1,
-    paddingVertical: 10,
+    paddingTop: 30,
+    paddingBottom: 20,
   },
   menuItem: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: 20,
-    paddingVertical: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: "#F0F0F0",
+    paddingVertical: 16,
+    borderBottomWidth: 0.5,
+    borderBottomColor: "#E5E5E5",
+    minHeight: 56,
+  },
+  highlightMenuItem: {
+    backgroundColor: "#007AFF",
+    borderBottomColor: "rgba(255, 255, 255, 0.2)",
   },
   menuItemContent: {
     flexDirection: "row",
@@ -272,9 +329,13 @@ const styles = StyleSheet.create({
   },
   menuItemText: {
     fontSize: 16,
-    color: "#333",
-    marginLeft: 15,
+    color: "#2C3E50",
+    marginLeft: 16,
     fontWeight: "500",
+    letterSpacing: 0.3,
+  },
+  highlightMenuItemText: {
+    color: "white",
   },
   dropdownContainer: {
     backgroundColor: "#F8F9FA",
@@ -282,15 +343,18 @@ const styles = StyleSheet.create({
     borderBottomColor: "#E0E0E0",
   },
   dropdownItem: {
-    paddingHorizontal: 55,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
+    paddingHorizontal: 56,
+    paddingVertical: 14,
+    borderBottomWidth: 0.5,
     borderBottomColor: "#E8E8E8",
+    minHeight: 48,
+    justifyContent: "center",
   },
   dropdownItemText: {
     fontSize: 14,
-    color: "#666",
+    color: "#5A6C7D",
     fontWeight: "400",
+    letterSpacing: 0.2,
   },
   logoutButton: {
     flexDirection: "row",

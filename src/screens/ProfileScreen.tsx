@@ -84,7 +84,7 @@ const ProfileScreen = ({ onNavigate }: ProfileScreenProps) => {
           <Text style={styles.sectionTitle}>Quick Actions</Text>
           <View style={styles.quickActionsGrid}>
             <TouchableOpacity style={styles.quickActionCard}>
-              <View style={[styles.quickActionIcon, { backgroundColor: "#E3F2FD" }]}>
+              <View style={[styles.quickActionIcon, { backgroundColor: "#E3F2FD" }]}> 
                 <Text style={styles.quickActionIconText}>📊</Text>
               </View>
               <Text style={styles.quickActionText}>Analytics</Text>

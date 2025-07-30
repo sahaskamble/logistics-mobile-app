@@ -4,23 +4,22 @@ import { useState } from "react"
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, SafeAreaView, StatusBar } from "react-native"
 import Icon from "../components/Icon"
 
-interface WeightmentSlipScreenProps {
+interface ReScanningScreenProps {
   onNavigate: (screen: string) => void
   onBack: () => void
 }
 
-interface WeightmentRequest {
+interface ScanningRequest {
   id: string
   orderId: string
-  customer: string
   serviceType: string
-  remarks: string
+  customerRemarks: string
   date: string
   status: "Approved" | "Pending" | "In Progress" | "Rejected"
   reason?: string
 }
 
-const WeightmentSlipScreen = ({ onNavigate, onBack }: WeightmentSlipScreenProps) => {
+const ReScanningScreen = ({ onNavigate, onBack }: ReScanningScreenProps) => {
   const [activeTab, setActiveTab] = useState<"Requests" | "Uploads">("Requests")
   const [searchQuery, setSearchQuery] = useState("")
   const [filterBy, setFilterBy] = useState("All")
@@ -31,43 +30,39 @@ const WeightmentSlipScreen = ({ onNavigate, onBack }: WeightmentSlipScreenProps)
     { label: "In Progress", count: 8, color: "#2196F3", icon: "🔄" }
   ]
 
-  const weightmentRequests: WeightmentRequest[] = [
+  const scanningRequests: ScanningRequest[] = [
     {
-      id: "REQ-00128",
-      orderId: "ORD-9245",
-      customer: "Acme Corporation",
-      serviceType: "Container Weighing",
-      remarks: "Urgent shipment for export",
-      date: "24 Jun 2023",
+      id: "#RS-2305",
+      orderId: "#ORD-9876",
+      serviceType: "Express Delivery",
+      customerRemarks: "Package was damaged upon arrival, requesting re-scan.",
+      date: "May 12, 2023 • 10:45 AM",
       status: "Approved"
     },
     {
-      id: "REQ-00127",
-      orderId: "ORD-9244",
-      customer: "Global Logistics Ltd",
-      serviceType: "Truck Weighing",
-      remarks: "Regular delivery schedule",
-      date: "23 Jun 2023",
+      id: "#RS-2304",
+      orderId: "#ORD-7654",
+      serviceType: "Standard Delivery",
+      customerRemarks: "Wrong item shipped, need verification scan.",
+      date: "May 11, 2023 • 02:30 PM",
       status: "Pending"
     },
     {
-      id: "REQ-00126",
-      orderId: "ORD-9240",
-      customer: "East Coast Shipping",
-      serviceType: "Bulk Cargo Weighing",
-      remarks: "Requires special handling",
-      date: "22 Jun 2023",
-      status: "In Progress"
+      id: "#RS-2302",
+      orderId: "#ORD-3210",
+      serviceType: "Standard Delivery",
+      customerRemarks: "Need to verify package contents before accepting.",
+      date: "May 9, 2023 • 11:20 AM",
+      status: "Rejected",
+      reason: "Package contents verified, no re-scan needed"
     },
     {
-      id: "REQ-00125",
-      orderId: "ORD-9238",
-      customer: "Pacific Freight Inc",
-      serviceType: "Container Weighing",
-      remarks: "Incomplete documentation",
-      date: "21 Jun 2023",
-      status: "Rejected",
-      reason: "Incomplete documentation"
+      id: "#RS-2303",
+      orderId: "#ORD-5432",
+      serviceType: "Priority Shipping",
+      customerRemarks: "Item count doesn't match invoice, please verify.",
+      date: "May 10, 2023 • 09:15 AM",
+      status: "In Progress"
     }
   ]
 
@@ -91,10 +86,10 @@ const WeightmentSlipScreen = ({ onNavigate, onBack }: WeightmentSlipScreenProps)
     }
   }
 
-  const filteredRequests = weightmentRequests.filter(request => {
+  const filteredRequests = scanningRequests.filter(request => {
     const matchesSearch = request.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          request.orderId.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         request.customer.toLowerCase().includes(searchQuery.toLowerCase())
+                         request.serviceType.toLowerCase().includes(searchQuery.toLowerCase())
     const matchesFilter = filterBy === "All" || request.status === filterBy
     return matchesSearch && matchesFilter
   })
@@ -107,7 +102,7 @@ const WeightmentSlipScreen = ({ onNavigate, onBack }: WeightmentSlipScreenProps)
         <TouchableOpacity style={styles.backButton} onPress={onBack}>
           <Icon name="arrowright" size={20} color="white" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Weightment Slip</Text>
+        <Text style={styles.headerTitle}>Re-Scanning</Text>
         <View style={styles.headerRight}>
           <TouchableOpacity style={styles.notificationButton}>
             <Icon name="bell" size={20} color="white" />
@@ -151,13 +146,24 @@ const WeightmentSlipScreen = ({ onNavigate, onBack }: WeightmentSlipScreenProps)
         ))}
       </View>
 
+      {/* New Request Button */}
+      <View style={styles.newRequestContainer}>
+        <TouchableOpacity 
+          style={styles.newRequestButton}
+          onPress={() => onNavigate("create-rescanning")}
+        >
+          <Icon name="plus" size={16} color="white" />
+          <Text style={styles.newRequestText}>New Request</Text>
+        </TouchableOpacity>
+      </View>
+
       {/* Search and Filter */}
       <View style={styles.searchContainer}>
         <View style={styles.searchBox}>
           <Icon name="search" size={16} color="#666" />
           <TextInput
             style={styles.searchInput}
-            placeholder="Search requests..."
+            placeholder="Search request ID"
             placeholderTextColor="#999"
             value={searchQuery}
             onChangeText={setSearchQuery}
@@ -168,25 +174,6 @@ const WeightmentSlipScreen = ({ onNavigate, onBack }: WeightmentSlipScreenProps)
         </TouchableOpacity>
       </View>
 
-      {/* Filter Row */}
-      <View style={styles.filterRow}>
-        <Text style={styles.filterLabel}>Filter by:</Text>
-        <View style={styles.filterOptions}>
-          {["All", "Approved", "Pending", "In Progress", "Rejected"].map((option) => (
-            <TouchableOpacity
-              key={option}
-              style={[styles.filterOption, filterBy === option && styles.activeFilterOption]}
-              onPress={() => setFilterBy(option)}
-            >
-              <Text style={[styles.filterOptionText, filterBy === option && styles.activeFilterOptionText]}>
-                {option}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-        <Text style={styles.resultsCount}>{filteredRequests.length} results</Text>
-      </View>
-
       {/* Content */}
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {activeTab === "Requests" && (
@@ -195,52 +182,42 @@ const WeightmentSlipScreen = ({ onNavigate, onBack }: WeightmentSlipScreenProps)
               <View key={index} style={styles.requestCard}>
                 <View style={styles.requestHeader}>
                   <View style={styles.requestIdContainer}>
-                    <Text style={styles.requestId}>{request.id}</Text>
+                    <Text style={styles.requestId}>Request ID</Text>
+                    <Text style={styles.requestIdValue}>{request.id}</Text>
                     <View style={[styles.statusBadge, { backgroundColor: getStatusColor(request.status) }]}>
-                      <Text style={styles.statusIcon}>{getStatusIcon(request.status)}</Text>
                       <Text style={styles.statusText}>{request.status}</Text>
                     </View>
                   </View>
-                  <TouchableOpacity style={styles.moreButton}>
-                    <Text style={styles.moreIcon}>⋮</Text>
-                  </TouchableOpacity>
                 </View>
 
-                <Text style={styles.orderNumber}>Order: {request.orderId}</Text>
+                <View style={styles.orderInfo}>
+                  <Text style={styles.orderLabel}>Order ID</Text>
+                  <Text style={styles.orderValue}>{request.orderId}</Text>
+                </View>
 
-                <View style={styles.requestDetails}>
-                  <View style={styles.detailRow}>
-                    <View style={styles.detailItem}>
-                      <Text style={styles.detailLabel}>Customer:</Text>
-                      <Text style={styles.detailValue}>{request.customer}</Text>
-                    </View>
-                  </View>
-
-                  <View style={styles.detailRow}>
-                    <View style={styles.detailItem}>
-                      <Text style={styles.detailLabel}>Service Type:</Text>
-                      <Text style={styles.detailValue}>{request.serviceType}</Text>
-                    </View>
-                  </View>
-
-                  <View style={styles.detailRow}>
-                    <View style={styles.detailItem}>
-                      <Text style={styles.detailLabel}>Date:</Text>
-                      <Text style={styles.detailValue}>{request.date}</Text>
-                    </View>
-                  </View>
+                <View style={styles.serviceInfo}>
+                  <Text style={styles.serviceLabel}>Service Type</Text>
+                  <Text style={styles.serviceValue}>{request.serviceType}</Text>
                 </View>
 
                 <View style={styles.remarksContainer}>
-                  <Text style={styles.remarksLabel}>
-                    {request.status === "Rejected" ? "Reason:" : "Remarks:"}
-                  </Text>
-                  <Text style={[
-                    styles.remarksText,
-                    request.status === "Rejected" && styles.rejectedText
-                  ]}>
-                    {request.status === "Rejected" ? request.reason : request.remarks}
-                  </Text>
+                  <Text style={styles.remarksLabel}>Customer Remarks</Text>
+                  <Text style={styles.remarksText}>{request.customerRemarks}</Text>
+                </View>
+
+                {request.status === "Rejected" && request.reason && (
+                  <View style={styles.reasonContainer}>
+                    <Text style={styles.reasonLabel}>Reason:</Text>
+                    <Text style={styles.reasonText}>{request.reason}</Text>
+                  </View>
+                )}
+
+                <View style={styles.requestFooter}>
+                  <Text style={styles.dateText}>{request.date}</Text>
+                  <TouchableOpacity style={styles.detailsButton}>
+                    <Text style={styles.detailsButtonText}>View Details</Text>
+                    <Icon name="arrowright" size={12} color="#4A90E2" />
+                  </TouchableOpacity>
                 </View>
               </View>
             ))}
@@ -253,9 +230,9 @@ const WeightmentSlipScreen = ({ onNavigate, onBack }: WeightmentSlipScreenProps)
               <View style={styles.uploadIcon}>
                 <Icon name="upload" size={48} color="#4A90E2" />
               </View>
-              <Text style={styles.uploadPlaceholderTitle}>Upload Weightment Documents</Text>
+              <Text style={styles.uploadPlaceholderTitle}>Upload Scanning Documents</Text>
               <Text style={styles.uploadPlaceholderText}>
-                Upload weightment slips, certificates, and related documents
+                Upload photos, scan reports, and related documents for re-scanning requests
               </Text>
               <TouchableOpacity style={styles.uploadButton}>
                 <Icon name="plus" size={16} color="white" />
@@ -266,11 +243,6 @@ const WeightmentSlipScreen = ({ onNavigate, onBack }: WeightmentSlipScreenProps)
           </View>
         )}
       </ScrollView>
-
-      {/* Floating Action Button */}
-      <TouchableOpacity style={styles.fab} onPress={() => onNavigate("create-weightment")}>
-        <Icon name="plus" size={24} color="white" />
-      </TouchableOpacity>
 
       {/* Bottom Navigation */}
       <View style={styles.bottomNavigation}>
@@ -436,6 +408,29 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
   },
+  newRequestContainer: {
+    paddingHorizontal: 16,
+    paddingTop: 16,
+  },
+  newRequestButton: {
+    backgroundColor: "#4A90E2",
+    borderRadius: 8,
+    paddingVertical: 14,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#4A90E2",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 4,
+  },
+  newRequestText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "600",
+    marginLeft: 8,
+  },
   searchContainer: {
     flexDirection: "row",
     paddingHorizontal: 16,
@@ -473,50 +468,9 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 2,
   },
-  filterRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 16,
-    paddingTop: 12,
-    flexWrap: "wrap",
-  },
-  filterLabel: {
-    fontSize: 12,
-    color: "#666",
-    marginRight: 8,
-  },
-  filterOptions: {
-    flexDirection: "row",
-    flex: 1,
-    flexWrap: "wrap",
-  },
-  filterOption: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 4,
-    marginRight: 4,
-    marginBottom: 4,
-  },
-  activeFilterOption: {
-    backgroundColor: "#E3F2FD",
-  },
-  filterOptionText: {
-    fontSize: 11,
-    color: "#666",
-  },
-  activeFilterOptionText: {
-    color: "#4A90E2",
-    fontWeight: "500",
-  },
-  resultsCount: {
-    fontSize: 11,
-    color: "#999",
-    marginLeft: "auto",
-  },
   content: {
     flex: 1,
     paddingTop: 8,
-    paddingBottom: 80, // Space for FAB
   },
   requestsList: {
     paddingHorizontal: 16,
@@ -533,78 +487,69 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   requestHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: 8,
+    marginBottom: 12,
   },
   requestIdContainer: {
     flexDirection: "row",
     alignItems: "center",
-    flex: 1,
+    flexWrap: "wrap",
   },
   requestId: {
-    fontSize: 16,
+    fontSize: 12,
+    color: "#666",
+    marginRight: 8,
+  },
+  requestIdValue: {
+    fontSize: 14,
     fontWeight: "bold",
     color: "#333",
     marginRight: 12,
   },
   statusBadge: {
-    flexDirection: "row",
-    alignItems: "center",
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 12,
-  },
-  statusIcon: {
-    fontSize: 10,
-    color: "white",
-    marginRight: 4,
   },
   statusText: {
     fontSize: 10,
     color: "white",
     fontWeight: "bold",
   },
-  moreButton: {
-    padding: 4,
-  },
-  moreIcon: {
-    fontSize: 16,
-    color: "#666",
-  },
-  orderNumber: {
-    fontSize: 12,
-    color: "#666",
-    marginBottom: 12,
-  },
-  requestDetails: {
-    marginBottom: 12,
-  },
-  detailRow: {
+  orderInfo: {
     flexDirection: "row",
     marginBottom: 8,
   },
-  detailItem: {
-    flex: 1,
-  },
-  detailLabel: {
-    fontSize: 11,
+  orderLabel: {
+    fontSize: 12,
     color: "#666",
-    marginBottom: 2,
+    width: 80,
   },
-  detailValue: {
+  orderValue: {
     fontSize: 12,
     color: "#333",
     fontWeight: "500",
+    flex: 1,
+  },
+  serviceInfo: {
+    flexDirection: "row",
+    marginBottom: 12,
+  },
+  serviceLabel: {
+    fontSize: 12,
+    color: "#666",
+    width: 80,
+  },
+  serviceValue: {
+    fontSize: 12,
+    color: "#333",
+    fontWeight: "500",
+    flex: 1,
   },
   remarksContainer: {
-    borderTopWidth: 1,
-    borderTopColor: "#f0f0f0",
-    paddingTop: 12,
+    marginBottom: 12,
   },
   remarksLabel: {
-    fontSize: 11,
+    fontSize: 12,
     color: "#666",
     marginBottom: 4,
   },
@@ -613,9 +558,44 @@ const styles = StyleSheet.create({
     color: "#333",
     lineHeight: 16,
   },
-  rejectedText: {
+  reasonContainer: {
+    backgroundColor: "#FFEBEE",
+    padding: 8,
+    borderRadius: 6,
+    marginBottom: 12,
+  },
+  reasonLabel: {
+    fontSize: 11,
     color: "#F44336",
     fontWeight: "500",
+    marginBottom: 2,
+  },
+  reasonText: {
+    fontSize: 11,
+    color: "#F44336",
+    lineHeight: 14,
+  },
+  requestFooter: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    borderTopWidth: 1,
+    borderTopColor: "#f0f0f0",
+    paddingTop: 12,
+  },
+  dateText: {
+    fontSize: 11,
+    color: "#999",
+  },
+  detailsButton: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  detailsButtonText: {
+    fontSize: 12,
+    color: "#4A90E2",
+    fontWeight: "500",
+    marginRight: 4,
   },
   uploadsContainer: {
     flex: 1,
@@ -669,22 +649,6 @@ const styles = StyleSheet.create({
     color: "#999",
     textAlign: "center",
   },
-  fab: {
-    position: "absolute",
-    bottom: 100,
-    right: 20,
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: "#4A90E2",
-    justifyContent: "center",
-    alignItems: "center",
-    shadowColor: "#4A90E2",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
-  },
   bottomNavigation: {
     flexDirection: "row",
     backgroundColor: "white",
@@ -729,4 +693,4 @@ const styles = StyleSheet.create({
   },
 })
 
-export default WeightmentSlipScreen
+export default ReScanningScreen

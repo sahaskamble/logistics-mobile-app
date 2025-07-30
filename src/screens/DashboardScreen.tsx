@@ -78,7 +78,7 @@ const DashboardScreen = ({ onNavigate, onLogout }: DashboardScreenProps) => {
   const currentData = orderTrendsData[selectedPeriod as keyof typeof orderTrendsData]
 
   const periodOptions = [
-    { label: "Week", value: "week" },
+    { label: "Week", value: "📅" },
     { label: "month", value: "month" },
     { label: "Year", value: "year" }
   ]
@@ -426,7 +426,7 @@ const DashboardScreen = ({ onNavigate, onLogout }: DashboardScreenProps) => {
         </TouchableOpacity>
       </View>
 
-      {/* Sidebar */}
+        {/* Sidebar */}
       <Sidebar
         isVisible={sidebarVisible}
         onClose={handleSidebarClose}
@@ -444,8 +444,8 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: "#4A90E2",
-    paddingTop: 10,
-    paddingBottom: 24,
+    paddingTop: 15,
+    paddingBottom: 20,
     shadowColor: "#4A90E2",
     shadowOffset: {
       width: 0,
@@ -459,7 +459,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingHorizontal: 20,
+    paddingHorizontal: 20,  
+    minHeight: 50,
   },
   headerTitle: {
     fontSize: 18,

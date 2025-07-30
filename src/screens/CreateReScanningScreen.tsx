@@ -4,53 +4,58 @@ import { useState } from "react"
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, SafeAreaView, StatusBar } from "react-native"
 import Icon from "../components/Icon"
 
-interface CreateWeightmentSlipScreenProps {
+interface CreateReScanningScreenProps {
   onNavigate: (screen: string) => void
   onBack: () => void
 }
 
-const CreateWeightmentSlipScreen = ({ onNavigate, onBack }: CreateWeightmentSlipScreenProps) => {
+const CreateReScanningScreen = ({ onNavigate, onBack }: CreateReScanningScreenProps) => {
   const [formData, setFormData] = useState({
     requestId: "",
     orderId: "",
-    customerName: "",
     serviceType: "",
-    vehicleNumber: "",
-    driverName: "",
-    driverLicense: "",
-    containerNumber: "",
-    grossWeight: "",
-    tareWeight: "",
-    netWeight: "",
-    weighingDate: new Date().toISOString().split('T')[0],
-    weighingTime: new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' }),
-    operatorName: "",
-    remarks: "",
+    packageDetails: "",
+    issueDescription: "",
+    customerRemarks: "",
+    urgencyLevel: "",
+    contactPerson: "",
+    contactNumber: "",
+    preferredDate: new Date().toISOString().split('T')[0],
+    preferredTime: "09:00",
     attachments: []
   })
 
   const serviceTypes = [
-    "Container Weighing",
-    "Truck Weighing", 
-    "Bulk Cargo Weighing",
-    "Vehicle Weighing",
-    "Cargo Verification"
+    "Express Delivery",
+    "Standard Delivery", 
+    "Priority Shipping",
+    "Bulk Cargo",
+    "Container Handling"
+  ]
+
+  const urgencyLevels = [
+    "Low",
+    "Medium",
+    "High",
+    "Critical"
+  ]
+
+  const issueTypes = [
+    "Package Damage",
+    "Wrong Item Shipped",
+    "Missing Items",
+    "Quality Issues",
+    "Quantity Mismatch",
+    "Documentation Error",
+    "Other"
   ]
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }))
-    
-    // Auto-calculate net weight
-    if (field === "grossWeight" || field === "tareWeight") {
-      const gross = field === "grossWeight" ? parseFloat(value) || 0 : parseFloat(formData.grossWeight) || 0
-      const tare = field === "tareWeight" ? parseFloat(value) || 0 : parseFloat(formData.tareWeight) || 0
-      const net = gross - tare
-      setFormData(prev => ({ ...prev, netWeight: net > 0 ? net.toFixed(2) : "" }))
-    }
   }
 
   const handleSubmit = () => {
-    console.log("Weightment slip created:", formData)
+    console.log("Re-scanning request created:", formData)
     // Handle form submission
   }
 
@@ -66,7 +71,7 @@ const CreateWeightmentSlipScreen = ({ onNavigate, onBack }: CreateWeightmentSlip
         <TouchableOpacity style={styles.backButton} onPress={onBack}>
           <Icon name="arrowright" size={20} color="white" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Create Weightment Slip</Text>
+        <Text style={styles.headerTitle}>New Re-Scanning Request</Text>
         <View style={styles.headerRight}>
           <TouchableOpacity style={styles.notificationButton}>
             <Icon name="bell" size={20} color="white" />
@@ -88,16 +93,16 @@ const CreateWeightmentSlipScreen = ({ onNavigate, onBack }: CreateWeightmentSlip
               <View style={[styles.inputGroup, { flex: 1, marginRight: 8 }]}>
                 <Text style={styles.label}>Request ID</Text>
                 <TextInput
-                  style={styles.input}
+                  style={[styles.input, styles.disabledInput]}
                   placeholder="Auto-generated"
                   placeholderTextColor="#999"
                   value={formData.requestId}
-                  onChangeText={(value) => handleInputChange("requestId", value)}
+                  editable={false}
                 />
               </View>
               
               <View style={[styles.inputGroup, { flex: 1, marginLeft: 8 }]}>
-                <Text style={styles.label}>Order ID</Text>
+                <Text style={styles.label}>Order ID *</Text>
                 <TextInput
                   style={styles.input}
                   placeholder="Enter Order ID"
@@ -109,18 +114,7 @@ const CreateWeightmentSlipScreen = ({ onNavigate, onBack }: CreateWeightmentSlip
             </View>
 
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>Customer Name</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Enter Customer Name"
-                placeholderTextColor="#999"
-                value={formData.customerName}
-                onChangeText={(value) => handleInputChange("customerName", value)}
-              />
-            </View>
-
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Service Type</Text>
+              <Text style={styles.label}>Service Type *</Text>
               <TouchableOpacity style={styles.dropdown}>
                 <Text style={styles.dropdownText}>
                   {formData.serviceType || "Select Service Type"}
@@ -128,161 +122,133 @@ const CreateWeightmentSlipScreen = ({ onNavigate, onBack }: CreateWeightmentSlip
                 <Icon name="chevrondown" size={14} color="#666" />
               </TouchableOpacity>
             </View>
-          </View>
-
-          {/* Vehicle Information Section */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>🚛 Vehicle Information</Text>
-            
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Vehicle Number</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Enter Vehicle Number"
-                placeholderTextColor="#999"
-                value={formData.vehicleNumber}
-                onChangeText={(value) => handleInputChange("vehicleNumber", value)}
-              />
-            </View>
-
-            <View style={styles.inputRow}>
-              <View style={[styles.inputGroup, { flex: 1, marginRight: 8 }]}>
-                <Text style={styles.label}>Driver Name</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Enter Driver Name"
-                  placeholderTextColor="#999"
-                  value={formData.driverName}
-                  onChangeText={(value) => handleInputChange("driverName", value)}
-                />
-              </View>
-              
-              <View style={[styles.inputGroup, { flex: 1, marginLeft: 8 }]}>
-                <Text style={styles.label}>Driver License</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="License Number"
-                  placeholderTextColor="#999"
-                  value={formData.driverLicense}
-                  onChangeText={(value) => handleInputChange("driverLicense", value)}
-                />
-              </View>
-            </View>
 
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>Container Number (if applicable)</Text>
+              <Text style={styles.label}>Package Details</Text>
               <TextInput
                 style={styles.input}
-                placeholder="Enter Container Number"
+                placeholder="Enter package details (weight, dimensions, etc.)"
                 placeholderTextColor="#999"
-                value={formData.containerNumber}
-                onChangeText={(value) => handleInputChange("containerNumber", value)}
+                value={formData.packageDetails}
+                onChangeText={(value) => handleInputChange("packageDetails", value)}
               />
             </View>
           </View>
 
-          {/* Weight Information Section */}
+          {/* Issue Details Section */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>⚖️ Weight Information</Text>
+            <Text style={styles.sectionTitle}>⚠️ Issue Details</Text>
             
-            <View style={styles.inputRow}>
-              <View style={[styles.inputGroup, { flex: 1, marginRight: 8 }]}>
-                <Text style={styles.label}>Gross Weight (kg)</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="0.00"
-                  placeholderTextColor="#999"
-                  keyboardType="numeric"
-                  value={formData.grossWeight}
-                  onChangeText={(value) => handleInputChange("grossWeight", value)}
-                />
-              </View>
-              
-              <View style={[styles.inputGroup, { flex: 1, marginLeft: 8 }]}>
-                <Text style={styles.label}>Tare Weight (kg)</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="0.00"
-                  placeholderTextColor="#999"
-                  keyboardType="numeric"
-                  value={formData.tareWeight}
-                  onChangeText={(value) => handleInputChange("tareWeight", value)}
-                />
-              </View>
-            </View>
-
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>Net Weight (kg)</Text>
-              <View style={[styles.input, styles.calculatedField]}>
-                <Text style={styles.calculatedText}>
-                  {formData.netWeight || "Auto-calculated"}
+              <Text style={styles.label}>Issue Description *</Text>
+              <TouchableOpacity style={styles.dropdown}>
+                <Text style={styles.dropdownText}>
+                  {formData.issueDescription || "Select Issue Type"}
                 </Text>
+                <Icon name="chevrondown" size={14} color="#666" />
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Customer Remarks *</Text>
+              <TextInput
+                style={[styles.input, styles.textArea]}
+                placeholder="Describe the issue in detail..."
+                placeholderTextColor="#999"
+                multiline
+                numberOfLines={4}
+                value={formData.customerRemarks}
+                onChangeText={(value) => handleInputChange("customerRemarks", value)}
+              />
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Urgency Level</Text>
+              <TouchableOpacity style={styles.dropdown}>
+                <Text style={styles.dropdownText}>
+                  {formData.urgencyLevel || "Select Urgency Level"}
+                </Text>
+                <Icon name="chevrondown" size={14} color="#666" />
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* Contact Information Section */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>📞 Contact Information</Text>
+            
+            <View style={styles.inputRow}>
+              <View style={[styles.inputGroup, { flex: 1, marginRight: 8 }]}>
+                <Text style={styles.label}>Contact Person</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Enter contact name"
+                  placeholderTextColor="#999"
+                  value={formData.contactPerson}
+                  onChangeText={(value) => handleInputChange("contactPerson", value)}
+                />
+              </View>
+              
+              <View style={[styles.inputGroup, { flex: 1, marginLeft: 8 }]}>
+                <Text style={styles.label}>Contact Number</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Enter phone number"
+                  placeholderTextColor="#999"
+                  keyboardType="phone-pad"
+                  value={formData.contactNumber}
+                  onChangeText={(value) => handleInputChange("contactNumber", value)}
+                />
               </View>
             </View>
           </View>
 
-          {/* Date & Time Section */}
+          {/* Scheduling Section */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>📅 Date & Time</Text>
+            <Text style={styles.sectionTitle}>📅 Preferred Schedule</Text>
             
             <View style={styles.inputRow}>
               <View style={[styles.inputGroup, { flex: 1, marginRight: 8 }]}>
-                <Text style={styles.label}>Weighing Date</Text>
+                <Text style={styles.label}>Preferred Date</Text>
                 <View style={styles.dateInput}>
-                  <Text style={styles.dateText}>{formData.weighingDate}</Text>
+                  <Text style={styles.dateText}>{formData.preferredDate}</Text>
                   <Icon name="calendar" size={16} color="#666" />
                 </View>
               </View>
               
               <View style={[styles.inputGroup, { flex: 1, marginLeft: 8 }]}>
-                <Text style={styles.label}>Weighing Time</Text>
+                <Text style={styles.label}>Preferred Time</Text>
                 <View style={styles.dateInput}>
-                  <Text style={styles.dateText}>{formData.weighingTime}</Text>
+                  <Text style={styles.dateText}>{formData.preferredTime}</Text>
                   <Icon name="clock" size={16} color="#666" />
                 </View>
               </View>
             </View>
-
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Operator Name</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Enter Operator Name"
-                placeholderTextColor="#999"
-                value={formData.operatorName}
-                onChangeText={(value) => handleInputChange("operatorName", value)}
-              />
-            </View>
           </View>
 
-          {/* Additional Information Section */}
+          {/* Attachments Section */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>📝 Additional Information</Text>
+            <Text style={styles.sectionTitle}>📎 Attachments</Text>
             
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>Remarks</Text>
-              <TextInput
-                style={[styles.input, styles.textArea]}
-                placeholder="Enter any additional remarks or notes"
-                placeholderTextColor="#999"
-                multiline
-                numberOfLines={4}
-                value={formData.remarks}
-                onChangeText={(value) => handleInputChange("remarks", value)}
-              />
-            </View>
-
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Attachments</Text>
+              <Text style={styles.label}>Upload Supporting Documents</Text>
               <TouchableOpacity style={styles.uploadArea}>
                 <View style={styles.uploadIcon}>
                   <Icon name="upload" size={24} color="#4A90E2" />
                 </View>
                 <Text style={styles.uploadText}>Upload Photos & Documents</Text>
                 <Text style={styles.uploadSubtext}>
-                  Vehicle photos, weight certificates, etc.
+                  Photos of damaged items, invoices, receipts, etc.
                 </Text>
               </TouchableOpacity>
+            </View>
+
+            <View style={styles.uploadTips}>
+              <Text style={styles.tipsTitle}>💡 Tips for better processing:</Text>
+              <Text style={styles.tipText}>• Take clear photos of the issue</Text>
+              <Text style={styles.tipText}>• Include original packaging if damaged</Text>
+              <Text style={styles.tipText}>• Attach relevant invoices or receipts</Text>
+              <Text style={styles.tipText}>• Provide multiple angles if needed</Text>
             </View>
           </View>
         </View>
@@ -292,7 +258,7 @@ const CreateWeightmentSlipScreen = ({ onNavigate, onBack }: CreateWeightmentSlip
       <View style={styles.actionButtons}>
         <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
           <Icon name="check" size={16} color="white" />
-          <Text style={styles.submitButtonText}>Create Weightment Slip</Text>
+          <Text style={styles.submitButtonText}>Submit Request</Text>
         </TouchableOpacity>
         
         <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
@@ -445,6 +411,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#e0e0e0",
   },
+  disabledInput: {
+    backgroundColor: "#f0f0f0",
+    color: "#999",
+  },
   textArea: {
     height: 80,
     textAlignVertical: "top",
@@ -463,15 +433,6 @@ const styles = StyleSheet.create({
   dropdownText: {
     fontSize: 14,
     color: "#333",
-  },
-  calculatedField: {
-    backgroundColor: "#E3F2FD",
-    borderColor: "#4A90E2",
-  },
-  calculatedText: {
-    fontSize: 14,
-    color: "#4A90E2",
-    fontWeight: "500",
   },
   dateInput: {
     backgroundColor: "#f8fafc",
@@ -516,6 +477,23 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#999",
     textAlign: "center",
+  },
+  uploadTips: {
+    backgroundColor: "#E8F5E8",
+    borderRadius: 8,
+    padding: 12,
+    marginTop: 12,
+  },
+  tipsTitle: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: "#2E7D32",
+    marginBottom: 8,
+  },
+  tipText: {
+    fontSize: 11,
+    color: "#2E7D32",
+    marginBottom: 2,
   },
   actionButtons: {
     padding: 16,
@@ -598,4 +576,4 @@ const styles = StyleSheet.create({
   },
 })
 
-export default CreateWeightmentSlipScreen
+export default CreateReScanningScreen

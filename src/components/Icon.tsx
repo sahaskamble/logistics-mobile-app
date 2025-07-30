@@ -50,6 +50,14 @@ const Icon: React.FC<IconProps> = ({ name, size, color }) => {
       chevrondown:"▼",
       chevronup:"▲",
       close:"✕",
+      calendar:"📅",
+      chat:"💬",
+      handshake:"🤝",
+      "arrow-left":"←",
+      bookmark:"🔖",
+      mail:"✉️",
+      phone:"📞",
+      globe:"🌐",
     }
     return icons[iconName] || "?"
   }

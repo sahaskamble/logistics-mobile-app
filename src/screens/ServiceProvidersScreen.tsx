@@ -4,13 +4,14 @@ import { useState } from "react"
 import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity } from "react-native"
 import Icon from "../components/Icon"
 import ServiceProviderCard from "../components/ServiceProviderCard"
-import { serviceProviders } from "../data/serviceProviders"
+import { serviceProviders, ServiceProvider } from "../data/serviceProviders"
 
 interface ServiceProvidersScreenProps {
   onNavigate: (screen: string) => void
+  onViewProviderDetails?: (provider: ServiceProvider) => void
 }
 
-const ServiceProvidersScreen = ({ onNavigate }: ServiceProvidersScreenProps) => {
+const ServiceProvidersScreen = ({ onNavigate, onViewProviderDetails }: ServiceProvidersScreenProps) => {
   const [selectedCategory, setSelectedCategory] = useState("CFS")
   const [searchQuery, setSearchQuery] = useState("")
 
@@ -23,6 +24,7 @@ const ServiceProvidersScreen = ({ onNavigate }: ServiceProvidersScreenProps) => 
   )
 
   return (
+    
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
@@ -36,7 +38,7 @@ const ServiceProvidersScreen = ({ onNavigate }: ServiceProvidersScreenProps) => 
             </View>
           </View>
         </View>
-
+        
         {/* Category Tabs */}
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoryContainer}>
           {categories.map((category) => (
@@ -75,7 +77,11 @@ const ServiceProvidersScreen = ({ onNavigate }: ServiceProvidersScreenProps) => 
       {/* Service Providers List */}
       <ScrollView style={styles.listContainer} showsVerticalScrollIndicator={false}>
         {filteredProviders.map((provider) => (
-          <ServiceProviderCard key={provider.id} provider={provider} />
+          <ServiceProviderCard
+            key={provider.id}
+            provider={provider}
+            onViewDetails={onViewProviderDetails}
+          />
         ))}
       </ScrollView>
 

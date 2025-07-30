@@ -7,16 +7,25 @@ interface ServiceProvider {
   name: string
   location: string
   rating: number
+  reviews: number
   services: string[]
   description: string
   image: string
+  email?: string
+  phone?: string
+  website?: string
+  areaSize?: string
+  capacity?: string
+  operatingHours?: string
+  security?: string
 }
 
 interface ServiceProviderCardProps {
   provider: ServiceProvider
+  onViewDetails?: (provider: ServiceProvider) => void
 }
 
-const ServiceProviderCard: React.FC<ServiceProviderCardProps> = ({ provider }) => {
+const ServiceProviderCard: React.FC<ServiceProviderCardProps> = ({ provider, onViewDetails }) => {
   return (
     <View style={styles.card}>
       <Image source={{ uri: provider.image }} style={styles.image} />
@@ -49,7 +58,10 @@ const ServiceProviderCard: React.FC<ServiceProviderCardProps> = ({ provider }) =
           <TouchableOpacity style={styles.requestButton}>
             <Text style={styles.requestButtonText}>Request Price</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.detailsButton}>
+          <TouchableOpacity
+            style={styles.detailsButton}
+            onPress={() => onViewDetails?.(provider)}
+          >
             <Text style={styles.detailsButtonText}>View Details</Text>
           </TouchableOpacity>
         </View>

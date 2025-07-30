@@ -1,9 +1,11 @@
 "use client"
 
 import { useState } from "react"
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from "react-native"
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView, StatusBar, Dimensions } from "react-native"
 import Icon from "../components/Icon"
 import Sidebar from "../components/Sidebar"
+
+const { width: screenWidth, height: screenHeight } = Dimensions.get('window')
 
 interface HomeScreenProps {
   onNavigate: (screen: string) => void
@@ -84,7 +86,8 @@ const HomeScreen = ({ onNavigate, onLogout, onNavigateToPriorityMovement }: Home
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="light-content" backgroundColor="#4A90E2" />
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerTop}>
@@ -191,6 +194,8 @@ const HomeScreen = ({ onNavigate, onLogout, onNavigateToPriorityMovement }: Home
                     onNavigateToPriorityMovement()
                   } else if (item.title === "Weightment Slip") {
                     onNavigate("weightment-slip")
+                  } else if (item.title === "Re-scanning") {
+                    onNavigate("rescanning")
                   }
                 }}
               >
@@ -244,7 +249,7 @@ const HomeScreen = ({ onNavigate, onLogout, onNavigateToPriorityMovement }: Home
         <TouchableOpacity style={styles.navItem} onPress={() => onNavigate("dashboard")}>
           <Icon name="grid" size={24} color="#999" />
           <Text style={styles.navText}>Dashboard</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> 
         <TouchableOpacity style={styles.addButton}>
           <Icon name="plus" size={24} color="white" />
         </TouchableOpacity>
@@ -265,7 +270,7 @@ const HomeScreen = ({ onNavigate, onLogout, onNavigateToPriorityMovement }: Home
         onNavigate={handleSidebarNavigate}
         onLogout={handleLogout}
       />
-    </View>
+    </SafeAreaView>
   )
 }
 
@@ -276,14 +281,20 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: "#4A90E2",
-    paddingTop: 10,
+    paddingTop: 15,
     paddingBottom: 20,
+    shadowColor: "#4A90E2",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
   },
   headerTop: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: 20,
+    minHeight: 50,
   },
   headerContent: {
     flex: 1,
@@ -293,11 +304,12 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     color: "white",
+    alignContent: "center",
   },
   welcomeText: {
     fontSize: 14,
     color: "rgba(255,255,255,0.8)",
-    marginTop: 2,
+    marginTop: 4,
   },
   headerIcons: {
     flexDirection: "row",
