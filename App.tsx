@@ -8,6 +8,7 @@ import SignInScreen from "./src/screens/SignInScreen"
 import HomeScreen from "./src/screens/HomeScreen"
 import ServiceProvidersScreen from "./src/screens/ServiceProvidersScreen"
 import ServiceProviderDetailsScreen from "./src/screens/ServiceProviderDetailsScreen"
+import ChatPageScreen from "./src/screens/ChatPageScreen"
 import DashboardScreen from "./src/screens/DashboardScreen"
 import ProfileScreen from "./src/screens/ProfileScreen"
 import PriorityMovementScreen from "./src/screens/PriorityMovementScreen"
@@ -15,6 +16,9 @@ import WeightmentSlipScreen from "./src/screens/WeightmentSlipScreen"
 import CreateWeightmentSlipScreen from "./src/screens/CreateWeightmentSlipScreen"
 import ReScanningScreen from "./src/screens/ReScanningScreen"
 import CreateReScanningScreen from "./src/screens/CreateReScanningScreen"
+import ContainersManagementScreen from "./src/screens/ContainersManagementScreen"
+import CreateContainerScreen from "./src/screens/CreateContainerScreen"
+import CreateOrderScreen from "./src/screens/CreateOrderScreen"
 import { ServiceProvider } from "./src/data/serviceProviders"
 
 const App = () => {
@@ -23,6 +27,7 @@ const App = () => {
   const [showSignIn, setShowSignIn] = useState(false)
   const [currentScreen, setCurrentScreen] = useState("home")
   const [selectedProvider, setSelectedProvider] = useState<ServiceProvider | null>(null)
+  const [containers, setContainers] = useState<any[]>([]) // Store created containers
 
   useEffect(() => {
     // Simulate splash screen loading time
@@ -65,6 +70,16 @@ const App = () => {
   const handleBackFromProviderDetails = () => {
     setSelectedProvider(null)
     setCurrentScreen("providers")
+  }
+
+  const handleCreateContainer = (containerData: any) => {
+    // Generate a unique ID for the new container
+    const newContainer = {
+      ...containerData,
+      id: `CON-${Date.now()}`,
+    }
+    setContainers(prev => [...prev, newContainer])
+    setCurrentScreen("containers-management")
   }
 
   const renderScreen = () => {
@@ -121,6 +136,30 @@ const App = () => {
         return <CreateReScanningScreen
           onNavigate={setCurrentScreen}
           onBack={() => setCurrentScreen("rescanning")}
+        />
+      case "chat-page":
+        return <ChatPageScreen
+          onNavigate={setCurrentScreen}
+          onBack={() => setCurrentScreen("home")}
+        />
+      case "containers-management":
+        return <ContainersManagementScreen
+          onBack={() => setCurrentScreen("home")}
+          onNavigate={setCurrentScreen}
+          onLogout={handleLogout}
+          onCreateContainer={() => setCurrentScreen("create-container")}
+          additionalContainers={containers}
+        />
+      case "create-container":
+        return <CreateContainerScreen
+          onBack={() => setCurrentScreen("containers-management")}
+          onSave={handleCreateContainer}
+        />
+      case "create-order":
+        return <CreateOrderScreen
+          onBack={() => setCurrentScreen("home")}
+          onNavigate={setCurrentScreen}
+          onLogout={handleLogout}
         />
       default:
         return <HomeScreen onNavigate={setCurrentScreen} />

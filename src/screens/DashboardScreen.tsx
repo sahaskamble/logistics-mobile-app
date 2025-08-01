@@ -78,9 +78,9 @@ const DashboardScreen = ({ onNavigate, onLogout }: DashboardScreenProps) => {
   const currentData = orderTrendsData[selectedPeriod as keyof typeof orderTrendsData]
 
   const periodOptions = [
-    { label: "Week", value: "📅" },
+    { label: "Week", value: "week" },
     { label: "month", value: "month" },
-    { label: "Year", value: "year" }
+    { label: "Year", value: "year" } 
   ]
 
   const handleSidebarToggle = () => {
@@ -413,7 +413,7 @@ const DashboardScreen = ({ onNavigate, onLogout }: DashboardScreenProps) => {
           <Icon name="grid" size={24} color="#4A90E2" />
           <Text style={[styles.navText, styles.activeNavText]}>Dashboard</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.addButton}>
+        <TouchableOpacity style={styles.addButton} onPress={() => onNavigate("create-order")}>
           <Icon name="plus" size={24} color="white" />
         </TouchableOpacity>
         <TouchableOpacity style={styles.navItem} onPress={() => onNavigate("providers")}>

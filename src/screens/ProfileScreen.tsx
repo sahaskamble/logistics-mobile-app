@@ -157,7 +157,7 @@ const ProfileScreen = ({ onNavigate }: ProfileScreenProps) => {
           <Icon name="grid" size={24} color="#999" />
           <Text style={styles.navText}>Dashboard</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.addButton}>
+        <TouchableOpacity style={styles.addButton} onPress={() => onNavigate("create-order")}>
           <Icon name="plus" size={24} color="white" />
         </TouchableOpacity>
         <TouchableOpacity style={styles.navItem} onPress={() => onNavigate("providers")}>

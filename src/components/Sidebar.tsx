@@ -13,16 +13,24 @@ interface SidebarProps {
   onLogout: () => void
 }
 
+interface DropdownItem {
+  id: string
+  title: string
+  hasSubDropdown?: boolean
+  subDropdownItems?: { id: string; title: string }[]
+}
+
 interface MenuItem {
   id: string
   title: string
   icon: string
   hasDropdown?: boolean
-  dropdownItems?: { id: string; title: string }[]
+  dropdownItems?: DropdownItem[]
 }
 
 const Sidebar = ({ isVisible, onClose, onNavigate, onLogout }: SidebarProps) => {
   const [expandedItems, setExpandedItems] = useState<string[]>([])
+  const [selectedItem, setSelectedItem] = useState<string>("")
   const slideAnim = useRef(new Animated.Value(-300)).current
   const backdropAnim = useRef(new Animated.Value(0)).current
 
@@ -63,7 +71,30 @@ const Sidebar = ({ isVisible, onClose, onNavigate, onLogout }: SidebarProps) => 
       icon: "dashboard"
     },
     {
-      id: "warehouse",
+      id: "CFS",
+      title: "CFS",
+      icon: "cfs",
+      hasDropdown: true,
+      dropdownItems: [
+        { id: "my-order", title: "My Order" },
+        { id: "service-request", title: "Service Request" },
+        { id: "pricing-request", title: "Pricing Request" },
+        { id: "track-trace", title: "Track & Trace" },
+        { id: "priority-movement", title: "Priority Movement" },
+        { id: "weightment-slip", title: "Weightment Slip" },
+        { id: "container-grounding", title: "Container Grounding" },
+        { id: "rescanning", title: "Re-scanning" },
+        { id: "tax-invoice", title: "Tax Invoice" },
+        { id: "eir-request", title: "EIR Request" },
+        { id: "special-equipment", title: "Special Equipment" },
+        { id: "job-order-update", title: "Job Order Update" },
+        { id: "cheque-acceptance", title: "Cheque Acceptance" },
+        { id: "container-staging", title: "Container Staging" },
+        { id: "proforma-invoice", title: "Proforma Invoice" }
+      ]
+    },
+    {
+      id: "Warehouse",
       title: "Warehouse",
       icon: "warehouse",
       hasDropdown: true,
@@ -86,31 +117,15 @@ const Sidebar = ({ isVisible, onClose, onNavigate, onLogout }: SidebarProps) => 
       ]
     },
     {
-      id: "cfs",
-      title: "CFS",
-      icon: "cfs",
-      hasDropdown: true,
-      dropdownItems: [
-        { id: "tariff-upload", title: "Tariff Upload" },
-        { id: "cfs-import", title: "Import Services" },
-        { id: "cfs-export", title: "Export Services" },
-        { id: "cfs-storage", title: "Storage Services" },
-        { id: "cfs-handling", title: "Cargo Handling" },
-        { id: "container-inventory", title: "Container Inventory" },
-        { id: "container-tracking", title: "Container Tracking" },
-        { id: "container-maintenance", title: "Container Maintenance" }
-      ]
-    },
-    {
       id: "transportation",
       title: "Transportation",
       icon: "transport",
       hasDropdown: true,
       dropdownItems: [
-        { id: "transport-booking", title: "Transport Booking" },
-        { id: "vehicle-tracking", title: "Vehicle Tracking" },
-        { id: "route-planning", title: "Route Planning" },
-        { id: "driver-management", title: "Driver Management" }
+        { id: "transport-booking", title: "Orders" },
+        { id: "vehicle-tracking", title: "Transport Movement" },
+        { id: "route-planning", title: "Pricing Request" },                      
+        { id: "driver-management", title: "Service Request" }
       ]
     },
     {
@@ -119,46 +134,144 @@ const Sidebar = ({ isVisible, onClose, onNavigate, onLogout }: SidebarProps) => 
       icon: "handshake",
       hasDropdown: true,
       dropdownItems: [
-        { id: "3pl-logistics", title: "Logistics Management" },
-        { id: "3pl-supply", title: "Supply Chain" },
-        { id: "3pl-distribution", title: "Distribution Network" }
+        { id: "3pl-orders", title: "Orders" },
+        { id: "3pl-pricing-requests", title: "Pricing Requests" },
+        {
+          id: "3pl-cfs",
+          title: "CFS",
+          hasSubDropdown: true,
+          subDropdownItems: [
+            { id: "3pl-cfs-my-order", title: "My Order" },
+            { id: "3pl-cfs-service-request", title: "Service Request" },
+            { id: "3pl-cfs-pricing-request", title: "Pricing Request" },
+            { id: "3pl-cfs-track-trace", title: "Track & Trace" },
+            { id: "3pl-cfs-priority-movement", title: "Priority Movement" },
+            { id: "3pl-cfs-weightment-slip", title: "Weightment Slip" },
+            { id: "3pl-cfs-container-grounding", title: "Container Grounding" },
+            { id: "3pl-cfs-rescanning", title: "Re-scanning" },
+            { id: "3pl-cfs-tax-invoice", title: "Tax Invoice" },
+            { id: "3pl-cfs-eir-request", title: "EIR Request" },
+            { id: "3pl-cfs-special-equipment", title: "Special Equipment" },
+            { id: "3pl-cfs-job-order-update", title: "Job Order Update" },
+            { id: "3pl-cfs-cheque-acceptance", title: "Cheque Acceptance" },
+            { id: "3pl-cfs-container-staging", title: "Container Staging" },
+            { id: "3pl-cfs-proforma-invoice", title: "Proforma Invoice" }
+          ]
+        },
+        {
+          id: "3pl-warehouse",
+          title: "Warehouse",
+          hasSubDropdown: true,
+          subDropdownItems: [
+            { id: "3pl-warehouse-my-order", title: "My Order" },
+            { id: "3pl-warehouse-service-request", title: "Service Request" },
+            { id: "3pl-warehouse-pricing-request", title: "Pricing Request" },
+            { id: "3pl-warehouse-track-trace", title: "Track & Trace" },
+            { id: "3pl-warehouse-priority-movement", title: "Priority Movement" },
+            { id: "3pl-warehouse-weightment-slip", title: "Weightment Slip" },
+            { id: "3pl-warehouse-container-grounding", title: "Container Grounding" },
+            { id: "3pl-warehouse-rescanning", title: "Re-scanning" },
+            { id: "3pl-warehouse-tax-invoice", title: "Tax Invoice" },
+            { id: "3pl-warehouse-eir-request", title: "EIR Request" },
+            { id: "3pl-warehouse-special-equipment", title: "Special Equipment" },
+            { id: "3pl-warehouse-job-order-update", title: "Job Order Update" },
+            { id: "3pl-warehouse-cheque-acceptance", title: "Cheque Acceptance" },
+            { id: "3pl-warehouse-container-staging", title: "Container Staging" },
+            { id: "3pl-warehouse-proforma-invoice", title: "Proforma Invoice" }
+          ]
+        },
+        {
+          id: "3pl-transport",
+          title: "Transport",
+          hasSubDropdown: true,
+          subDropdownItems: [
+            { id: "3pl-transport-booking", title: "Orders" },
+            { id: "3pl-transport-tracking", title: "Transport Movement" },
+            { id: "3pl-transport-pricing", title: "Pricing Request" },
+            { id: "3pl-transport-service", title: "Service Request" }
+          ]
+        }
       ]
     },
     {
-      id: "customs",
-      title: "Customs",
+      id: "custom",
+      title: "Custom",
       icon: "container",
       hasDropdown: true,
       dropdownItems: [
-        { id: "customs-clearance", title: "Customs Clearance" },
-        { id: "documentation", title: "Documentation" },
-        { id: "compliance-check", title: "Compliance Check" }
+        { id: "custom-orders-packages", title: "Orders Packages" },
+        { id: "custom-pricing-requests", title: "Pricing Requests" },
+        {
+          id: "custom-cfs",
+          title: "CFS",
+          hasSubDropdown: true,
+          subDropdownItems: [
+            { id: "custom-cfs-my-order", title: "My Order" },
+            { id: "custom-cfs-service-request", title: "Service Request" },
+            { id: "custom-cfs-pricing-request", title: "Pricing Request" },
+            { id: "custom-cfs-track-trace", title: "Track & Trace" },
+            { id: "custom-cfs-priority-movement", title: "Priority Movement" },
+            { id: "custom-cfs-weightment-slip", title: "Weightment Slip" },
+            { id: "custom-cfs-container-grounding", title: "Container Grounding" },
+            { id: "custom-cfs-rescanning", title: "Re-scanning" },
+            { id: "custom-cfs-tax-invoice", title: "Tax Invoice" },
+            { id: "custom-cfs-eir-request", title: "EIR Request" },
+            { id: "custom-cfs-special-equipment", title: "Special Equipment" },
+            { id: "custom-cfs-job-order-update", title: "Job Order Update" },
+            { id: "custom-cfs-cheque-acceptance", title: "Cheque Acceptance" },
+            { id: "custom-cfs-container-staging", title: "Container Staging" },
+            { id: "custom-cfs-proforma-invoice", title: "Proforma Invoice" }
+          ]
+        },
+        {
+          id: "custom-warehouse",
+          title: "Warehouse",
+          hasSubDropdown: true,
+          subDropdownItems: [
+            { id: "custom-warehouse-my-order", title: "My Order" },
+            { id: "custom-warehouse-service-request", title: "Service Request" },
+            { id: "custom-warehouse-pricing-request", title: "Pricing Request" },
+            { id: "custom-warehouse-track-trace", title: "Track & Trace" },
+            { id: "custom-warehouse-priority-movement", title: "Priority Movement" },
+            { id: "custom-warehouse-weightment-slip", title: "Weightment Slip" },
+            { id: "custom-warehouse-container-grounding", title: "Container Grounding" },
+            { id: "custom-warehouse-rescanning", title: "Re-scanning" },
+            { id: "custom-warehouse-tax-invoice", title: "Tax Invoice" },
+            { id: "custom-warehouse-eir-request", title: "EIR Request" },
+            { id: "custom-warehouse-special-equipment", title: "Special Equipment" },
+            { id: "custom-warehouse-job-order-update", title: "Job Order Update" },
+            { id: "custom-warehouse-cheque-acceptance", title: "Cheque Acceptance" },
+            { id: "custom-warehouse-container-staging", title: "Container Staging" },
+            { id: "custom-warehouse-proforma-invoice", title: "Proforma Invoice" }
+          ]
+        },
+        {
+          id: "custom-transport",
+          title: "Transport",
+          hasSubDropdown: true,
+          subDropdownItems: [
+            { id: "custom-transport-booking", title: "Orders" },
+            { id: "custom-transport-tracking", title: "Transport Movement" },
+            { id: "custom-transport-pricing", title: "Pricing Request" },
+            { id: "custom-transport-service", title: "Service Request" }
+          ]
+        }
       ]
     },
     {
-      id: "container-management",
-      title: "Container Management",
+      id: "containers-management",
+      title: "Containers Management",
       icon: "filetext"
     },
     {
       id: "notifications",
-      title: "Notification & Updates",
+      title: "Notifications & Updates",
       icon: "notifications"
-    },
-    {
-      id: "profile-update",
-      title: "Profile Update",
-      icon: "user"
     },
     {
       id: "chat-page",
       title: "Chat Page",
       icon: "chat"
-    },
-    {
-      id: "support",
-      title: "Support",
-      icon: "support"
     }
   ]
 
@@ -174,12 +287,24 @@ const Sidebar = ({ isVisible, onClose, onNavigate, onLogout }: SidebarProps) => 
     if (item.hasDropdown) {
       toggleDropdown(item.id)
     } else {
+      setSelectedItem(item.id)
       onNavigate(item.id)
       onClose()
     }
   }
 
-  const handleDropdownItemPress = (_parentId: string, itemId: string) => {
+  const handleDropdownItemPress = (_parentId: string, dropdownItem: DropdownItem) => {
+    if (dropdownItem.hasSubDropdown) {
+      toggleDropdown(dropdownItem.id)
+    } else {
+      setSelectedItem(dropdownItem.id)
+      onNavigate(dropdownItem.id)
+      onClose()
+    }
+  }
+
+  const handleSubDropdownItemPress = (_parentId: string, _subParentId: string, itemId: string) => {
+    setSelectedItem(itemId)
     onNavigate(itemId)
     onClose()
   }
@@ -208,7 +333,10 @@ const Sidebar = ({ isVisible, onClose, onNavigate, onLogout }: SidebarProps) => 
           }
         ]}
       >
-
+        {/* Header */}
+        <View style={styles.sidebarHeader}>
+          <Text style={styles.sidebarTitle}>Link My Logistics</Text>
+        </View>
 
         {/* Menu Items */}
         <ScrollView style={styles.menuContainer} showsVerticalScrollIndicator={false}>
@@ -217,7 +345,7 @@ const Sidebar = ({ isVisible, onClose, onNavigate, onLogout }: SidebarProps) => 
               <TouchableOpacity
                 style={[
                   styles.menuItem,
-                  item.id === 'warehouse' && styles.highlightMenuItem
+                  selectedItem === item.id && styles.highlightMenuItem
                 ]}
                 onPress={() => handleItemPress(item)}
               >
@@ -225,11 +353,11 @@ const Sidebar = ({ isVisible, onClose, onNavigate, onLogout }: SidebarProps) => 
                   <Icon
                     name={item.icon}
                     size={20}
-                    color={item.id === 'warehouse' ? 'white' : '#4A90E2'}
+                    color={selectedItem === item.id ? "white" : "#4A90E2"}
                   />
                   <Text style={[
                     styles.menuItemText,
-                    item.id === 'warehouse' && styles.highlightMenuItemText
+                    selectedItem === item.id && styles.highlightMenuItemText
                   ]}>
                     {item.title}
                   </Text>
@@ -238,7 +366,7 @@ const Sidebar = ({ isVisible, onClose, onNavigate, onLogout }: SidebarProps) => 
                   <Icon
                     name={expandedItems.includes(item.id) ? "chevronup" : "chevrondown"}
                     size={16}
-                    color={item.id === 'warehouse' ? 'white' : '#666'}
+                    color={selectedItem === item.id ? "white" : "#666"}
                   />
                 )}
               </TouchableOpacity>
@@ -247,13 +375,52 @@ const Sidebar = ({ isVisible, onClose, onNavigate, onLogout }: SidebarProps) => 
               {item.hasDropdown && expandedItems.includes(item.id) && (
                 <View style={styles.dropdownContainer}>
                   {item.dropdownItems?.map((dropdownItem) => (
-                    <TouchableOpacity
-                      key={dropdownItem.id}
-                      style={styles.dropdownItem}
-                      onPress={() => handleDropdownItemPress(item.id, dropdownItem.id)}
-                    >
-                      <Text style={styles.dropdownItemText}>{dropdownItem.title}</Text>
-                    </TouchableOpacity>
+                    <View key={dropdownItem.id}>
+                      <TouchableOpacity
+                        style={[
+                          styles.dropdownItem,
+                          selectedItem === dropdownItem.id && styles.selectedDropdownItem
+                        ]}
+                        onPress={() => handleDropdownItemPress(item.id, dropdownItem)}
+                      >
+                        <Text style={[
+                          styles.dropdownItemText,
+                          selectedItem === dropdownItem.id && styles.selectedDropdownItemText
+                        ]}>
+                          {dropdownItem.title}
+                        </Text>
+                        {dropdownItem.hasSubDropdown && (
+                          <Icon
+                            name={expandedItems.includes(dropdownItem.id) ? "chevronup" : "chevrondown"}
+                            size={14}
+                            color="#666"
+                          />
+                        )}
+                      </TouchableOpacity>
+
+                      {/* Sub-dropdown Items */}
+                      {dropdownItem.hasSubDropdown && expandedItems.includes(dropdownItem.id) && (
+                        <View style={styles.subDropdownContainer}>
+                          {dropdownItem.subDropdownItems?.map((subItem) => (
+                            <TouchableOpacity
+                              key={subItem.id}
+                              style={[
+                                styles.subDropdownItem,
+                                selectedItem === subItem.id && styles.selectedSubDropdownItem
+                              ]}
+                              onPress={() => handleSubDropdownItemPress(item.id, dropdownItem.id, subItem.id)}
+                            >
+                              <Text style={[
+                                styles.subDropdownItemText,
+                                selectedItem === subItem.id && styles.selectedSubDropdownItemText
+                              ]}>
+                                {subItem.title}
+                              </Text>
+                            </TouchableOpacity>
+                          ))}
+                        </View>
+                      )}
+                    </View>
                   ))}
                 </View>
               )}
@@ -302,10 +469,21 @@ const styles = StyleSheet.create({
     elevation: 16,
     zIndex: 1001,
   },
-
+  sidebarHeader: {
+    paddingHorizontal: 20,
+    paddingVertical: 25,
+    borderBottomWidth: 1,
+    borderBottomColor: "#E5E5E5",
+    backgroundColor: "#4A90E2",
+  },
+  sidebarTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "white",
+  },
   menuContainer: {
     flex: 1,
-    paddingTop: 30,
+    paddingTop: 10,
     paddingBottom: 20,
   },
   menuItem: {
@@ -319,8 +497,8 @@ const styles = StyleSheet.create({
     minHeight: 56,
   },
   highlightMenuItem: {
-    backgroundColor: "#007AFF",
-    borderBottomColor: "rgba(255, 255, 255, 0.2)",
+    backgroundColor: "#4A90E2",
+    borderBottomColor: "#4A90E2",
   },
   menuItemContent: {
     flexDirection: "row",
@@ -343,18 +521,52 @@ const styles = StyleSheet.create({
     borderBottomColor: "#E0E0E0",
   },
   dropdownItem: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     paddingHorizontal: 56,
     paddingVertical: 14,
     borderBottomWidth: 0.5,
     borderBottomColor: "#E8E8E8",
     minHeight: 48,
-    justifyContent: "center",
+  },
+  selectedDropdownItem: {
+    backgroundColor: "#4A90E2",
   },
   dropdownItemText: {
     fontSize: 14,
     color: "#5A6C7D",
     fontWeight: "400",
     letterSpacing: 0.2,
+    flex: 1,
+  },
+  selectedDropdownItemText: {
+    color: "white",
+  },
+  subDropdownContainer: {
+    backgroundColor: "#F0F0F0",
+    borderBottomWidth: 1,
+    borderBottomColor: "#E0E0E0",
+  },
+  subDropdownItem: {
+    paddingHorizontal: 72,
+    paddingVertical: 12,
+    borderBottomWidth: 0.5,
+    borderBottomColor: "#E8E8E8",
+    minHeight: 44,
+    justifyContent: "center",
+  },
+  selectedSubDropdownItem: {
+    backgroundColor: "#4A90E2",
+  },
+  subDropdownItemText: {
+    fontSize: 13,
+    color: "#666",
+    fontWeight: "400",
+    letterSpacing: 0.2,
+  },
+  selectedSubDropdownItemText: {
+    color: "white",
   },
   logoutButton: {
     flexDirection: "row",

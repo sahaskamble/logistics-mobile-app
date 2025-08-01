@@ -92,7 +92,7 @@ const HomeScreen = ({ onNavigate, onLogout, onNavigateToPriorityMovement }: Home
       <View style={styles.header}>
         <View style={styles.headerTop}>
           <TouchableOpacity onPress={handleSidebarToggle}>
-            <Icon name="menu" size={24} color="white" />
+            <Icon name="menu" size={33} color="white" />
           </TouchableOpacity>
           <View style={styles.headerContent}>
             <Text style={styles.appName}>LINK MY LOGISTICS</Text>
@@ -102,7 +102,7 @@ const HomeScreen = ({ onNavigate, onLogout, onNavigateToPriorityMovement }: Home
             <TouchableOpacity style={styles.notificationButton}>
               <Icon name="bell" size={24} color="white" />
             </TouchableOpacity>
-            <View style={styles.profileImage}>
+            <View style={styles.profileImage}>3     
               <Icon name="user" size={20} color="white" />
             </View>
           </View>
@@ -250,7 +250,7 @@ const HomeScreen = ({ onNavigate, onLogout, onNavigateToPriorityMovement }: Home
           <Icon name="grid" size={24} color="#999" />
           <Text style={styles.navText}>Dashboard</Text>
         </TouchableOpacity> 
-        <TouchableOpacity style={styles.addButton}>
+        <TouchableOpacity style={styles.addButton} onPress={() => onNavigate("create-order")}>
           <Icon name="plus" size={24} color="white" />
         </TouchableOpacity>
         <TouchableOpacity style={styles.navItem} onPress={() => onNavigate("providers")}>
@@ -303,8 +303,7 @@ const styles = StyleSheet.create({
   appName: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "white",
-    alignContent: "center",
+    color: "white", 
   },
   welcomeText: {
     fontSize: 14,
