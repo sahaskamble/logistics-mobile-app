@@ -19,12 +19,17 @@ import CreateReScanningScreen from "./src/screens/CreateReScanningScreen"
 import ContainersManagementScreen from "./src/screens/ContainersManagementScreen"
 import CreateContainerScreen from "./src/screens/CreateContainerScreen"
 import CreateOrderScreen from "./src/screens/CreateOrderScreen"
+import MyOrdersScreen from "./src/screens/MyOrdersScreen"
+import CreateNewOrderScreen from "./src/screens/CreateNewOrderScreen"
+import SignUpScreen from "./src/screens/SignUpScreen"
+import PricingRequestScreen from "./src/screens/PricingRequestScreen"
 import { ServiceProvider } from "./src/data/serviceProviders"
 
 const App = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [showOnboarding, setShowOnboarding] = useState(true)
   const [showSignIn, setShowSignIn] = useState(false)
+  const [showSignUp, setShowSignUp] = useState(false)
   const [currentScreen, setCurrentScreen] = useState("home")
   const [selectedProvider, setSelectedProvider] = useState<ServiceProvider | null>(null)
   const [containers, setContainers] = useState<any[]>([]) // Store created containers
@@ -49,16 +54,34 @@ const App = () => {
 
   const handleSignIn = () => {
     setShowSignIn(false)
+    setShowSignUp(false)
+  }
+
+  const handleSignUp = () => {
+    setShowSignUp(false)
+    setShowSignIn(false)
+  }
+
+  const handleNavigateToSignUp = () => {
+    setShowSignIn(false)
+    setShowSignUp(true)
+  }
+
+  const handleBackToSignIn = () => {
+    setShowSignUp(false)
+    setShowSignIn(true)
   }
 
   const handleBackToOnboarding = () => {
     setShowSignIn(false)
+    setShowSignUp(false)
     setShowOnboarding(true)
   }
 
   const handleLogout = () => {
     setShowOnboarding(false)
     setShowSignIn(true)
+    setShowSignUp(false)
     setCurrentScreen("home") // Reset to home screen for next login
   }
 
@@ -161,6 +184,26 @@ const App = () => {
           onNavigate={setCurrentScreen}
           onLogout={handleLogout}
         />
+      case "my-order":
+        return <MyOrdersScreen
+          onBack={() => setCurrentScreen("home")}
+          onNavigate={setCurrentScreen}
+          onLogout={handleLogout}
+        />
+      case "create-new-order":
+        return <CreateNewOrderScreen
+          onBack={() => setCurrentScreen("my-order")}
+          onSave={(orderData) => {
+            console.log('Order created:', orderData)
+            setCurrentScreen("my-order")
+          }}
+        />
+      case "pricing-request":
+        return <PricingRequestScreen
+          onBack={() => setCurrentScreen("home")}
+          onNavigate={setCurrentScreen}
+          onLogout={handleLogout}
+        />
       default:
         return <HomeScreen onNavigate={setCurrentScreen} />
     }
@@ -171,8 +214,14 @@ const App = () => {
       <StatusBar barStyle="light-content" backgroundColor="#4A90E2" />
       {isLoading ? (
         <SplashScreen />
+      ) : showSignUp ? (
+        <SignUpScreen onSignUp={handleSignUp} onBackToSignIn={handleBackToSignIn} />
       ) : showSignIn ? (
-        <SignInScreen onSignIn={handleSignIn} onBackToOnboarding={handleBackToOnboarding} />
+        <SignInScreen
+          onSignIn={handleSignIn}
+          onBackToOnboarding={handleBackToOnboarding}
+          onSignUp={handleNavigateToSignUp}
+        />
       ) : showOnboarding ? (
         <OnboardingScreen onComplete={handleOnboardingComplete} onNavigateToSignIn={handleNavigateToSignIn} />
       ) : (

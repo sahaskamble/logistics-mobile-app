@@ -7,9 +7,10 @@ import Icon from "../components/Icon"
 interface SignInScreenProps {
   onSignIn: () => void
   onBackToOnboarding: () => void
+  onSignUp?: () => void
 }
 
-const SignInScreen = ({ onSignIn, onBackToOnboarding }: SignInScreenProps) => {
+const SignInScreen = ({ onSignIn, onBackToOnboarding, onSignUp }: SignInScreenProps) => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -172,7 +173,7 @@ const SignInScreen = ({ onSignIn, onBackToOnboarding }: SignInScreenProps) => {
         </View>
 
         {/* Sign Up Link */}
-        <TouchableOpacity style={styles.signUpLink} onPress={onBackToOnboarding}>
+        <TouchableOpacity style={styles.signUpLink} onPress={onSignUp || onBackToOnboarding}>
           <Text style={styles.signUpText}>
             Don't have an account? <Text style={styles.signUpTextBold}>Sign Up</Text>
           </Text>

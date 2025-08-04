@@ -58,6 +58,12 @@ const Icon: React.FC<IconProps> = ({ name, size, color }) => {
       mail:"✉️",
       phone:"📞",
       globe:"🌐",
+      edit:"✏️",
+      download:"⬇️",
+      refresh:"🔄",
+      lock:"🔒",
+      more:"⋯",
+      info:"ℹ️",
     }
     return icons[iconName] || "?"
   }
