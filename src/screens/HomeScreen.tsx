@@ -90,22 +90,15 @@ const HomeScreen = ({ onNavigate, onLogout, onNavigateToPriorityMovement }: Home
       <StatusBar barStyle="light-content" backgroundColor="#4A90E2" />
       {/* Header */}
       <View style={styles.header}>
-        <View style={styles.headerTop}>
-          <TouchableOpacity onPress={handleSidebarToggle}>
-            <Icon name="menu" size={33} color="white" />
-          </TouchableOpacity>
-          <View style={styles.headerContent}>
-            <Text style={styles.appName}>LINK MY LOGISTICS</Text>
-            <Text style={styles.welcomeText}>Welcome, Devanshul</Text>
-          </View>
-          <View style={styles.headerIcons}>
-            <TouchableOpacity style={styles.notificationButton}>
-              <Icon name="bell" size={24} color="white" />
-            </TouchableOpacity>
-            <View style={styles.profileImage}>3     
-              <Icon name="user" size={20} color="white" />
-            </View>
-          </View>
+        <TouchableOpacity onPress={handleSidebarToggle} style={styles.menuButton}>
+          <Icon name="menu" size={24} color="white" />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Home</Text>
+        <TouchableOpacity style={styles.notificationButton}>
+          <Icon name="notifications" size={24} color="white" />
+        </TouchableOpacity>
+        <View style={styles.profileButton}>
+          <Icon name="user" size={24} color="white" />
         </View>
       </View>
 
@@ -280,50 +273,40 @@ const styles = StyleSheet.create({
     backgroundColor: "#f5f5f5",
   },
   header: {
-    backgroundColor: "#4A90E2",
-    paddingTop: 15,
-    paddingBottom: 20,
-    shadowColor: "#4A90E2",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#4A90E2',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    paddingTop: 50,
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
-  headerTop: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 20,
-    minHeight: 50,
+  menuButton: {
+    padding: 8,
+    marginRight: 12,
   },
-  headerContent: {
+  headerTitle: {
     flex: 1,
-    marginLeft: 15,
-  },
-  appName: {
     fontSize: 18,
-    fontWeight: "bold",
-    color: "white", 
-  },
-  welcomeText: {
-    fontSize: 14,
-    color: "rgba(255,255,255,0.8)",
-    marginTop: 4,
-  },
-  headerIcons: {
-    flexDirection: "row",
-    alignItems: "center",
+    fontWeight: '600',
+    color: 'white',
+    textAlign: 'left',
   },
   notificationButton: {
-    marginRight: 15,
+    padding: 8,
+    marginRight: 12,
   },
-  profileImage: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: "rgba(255,255,255,0.3)",
-    justifyContent: "center",
-    alignItems: "center",
+  profileButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   content: {
     flex: 1,

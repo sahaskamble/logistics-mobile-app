@@ -4,14 +4,17 @@ import { useState } from "react"
 import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity } from "react-native"
 import Icon from "../components/Icon"
 import ServiceProviderCard from "../components/ServiceProviderCard"
+import Sidebar from "../components/Sidebar"
 import { serviceProviders, ServiceProvider } from "../data/serviceProviders"
 
 interface ServiceProvidersScreenProps {
   onNavigate: (screen: string) => void
   onViewProviderDetails?: (provider: ServiceProvider) => void
+  onLogout?: () => void
 }
 
-const ServiceProvidersScreen = ({ onNavigate, onViewProviderDetails }: ServiceProvidersScreenProps) => {
+const ServiceProvidersScreen = ({ onNavigate, onViewProviderDetails, onLogout = () => {} }: ServiceProvidersScreenProps) => {
+  const [sidebarVisible, setSidebarVisible] = useState(false)
   const [selectedCategory, setSelectedCategory] = useState("CFS")
   const [searchQuery, setSearchQuery] = useState("")
 
@@ -28,18 +31,20 @@ const ServiceProvidersScreen = ({ onNavigate, onViewProviderDetails }: ServicePr
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <View style={styles.headerTop}>
+        <TouchableOpacity onPress={() => setSidebarVisible(true)} style={styles.menuButton}>
           <Icon name="menu" size={24} color="white" />
-          <Text style={styles.headerTitle}>Service Providers</Text>
-          <View style={styles.headerIcons}>
-            <Icon name="bell" size={24} color="white" />
-            <View style={styles.profileImage}>
-              <Icon name="user" size={20} color="white" />
-            </View>
-          </View>
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Service Providers</Text>
+        <TouchableOpacity style={styles.notificationButton}>
+          <Icon name="notifications" size={24} color="white" />
+        </TouchableOpacity>
+        <View style={styles.profileButton}>
+          <Icon name="user" size={24} color="white" />
         </View>
-        
-        {/* Category Tabs */}
+      </View>
+
+      {/* Category Tabs */}
+      <View style={styles.categorySection}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoryContainer}>
           {categories.map((category) => (
             <TouchableOpacity
@@ -107,6 +112,14 @@ const ServiceProvidersScreen = ({ onNavigate, onViewProviderDetails }: ServicePr
           <Text style={styles.navText}>Profile</Text>
         </TouchableOpacity>
       </View>
+
+      {/* Sidebar */}
+      <Sidebar
+        isVisible={sidebarVisible}
+        onClose={() => setSidebarVisible(false)}
+        onNavigate={onNavigate}
+        onLogout={onLogout}
+      />
     </View>
   )
 }
@@ -117,34 +130,44 @@ const styles = StyleSheet.create({
     backgroundColor: "#f5f5f5",
   },
   header: {
-    backgroundColor: "#4A90E2",
-    paddingTop: 10,
-    paddingBottom: 15,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#4A90E2',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    paddingTop: 50,
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
-  headerTop: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 20,
-    marginBottom: 20,
+  menuButton: {
+    padding: 8,
+    marginRight: 12,
   },
   headerTitle: {
+    flex: 1,
     fontSize: 18,
-    fontWeight: "bold",
-    color: "white",
+    fontWeight: '600',
+    color: 'white',
+    textAlign: 'left',
   },
-  headerIcons: {
-    flexDirection: "row",
-    alignItems: "center",
+  notificationButton: {
+    padding: 8,
+    marginRight: 12,
   },
-  profileImage: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: "rgba(255,255,255,0.3)",
-    justifyContent: "center",
-    alignItems: "center",
-    marginLeft: 15,
+  profileButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  categorySection: {
+    backgroundColor: '#4A90E2',
+    paddingBottom: 15,
   },
   categoryContainer: {
     paddingHorizontal: 20,

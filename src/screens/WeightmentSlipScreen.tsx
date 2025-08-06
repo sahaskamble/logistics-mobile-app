@@ -167,26 +167,7 @@ const WeightmentSlipScreen = ({ onNavigate, onBack }: WeightmentSlipScreenProps)
           <Icon name="filter" size={16} color="#666" />
         </TouchableOpacity>
       </View>
-
-      {/* Filter Row */}
-      <View style={styles.filterRow}>
-        <Text style={styles.filterLabel}>Filter by:</Text>
-        <View style={styles.filterOptions}>
-          {["All", "Approved", "Pending", "In Progress", "Rejected"].map((option) => (
-            <TouchableOpacity
-              key={option}
-              style={[styles.filterOption, filterBy === option && styles.activeFilterOption]}
-              onPress={() => setFilterBy(option)}
-            >
-              <Text style={[styles.filterOptionText, filterBy === option && styles.activeFilterOptionText]}>
-                {option}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-        <Text style={styles.resultsCount}>{filteredRequests.length} results</Text>
-      </View>
-
+      <View style={styles.filterRow}></View>
       {/* Content */}
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {activeTab === "Requests" && (

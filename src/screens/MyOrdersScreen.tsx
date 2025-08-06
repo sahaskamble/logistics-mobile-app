@@ -155,7 +155,7 @@ const MyOrdersScreen: React.FC<MyOrdersScreenProps> = ({
       blNumber: '2019245674341',
       containers: '(Cwj2zksdr) (vgPha2Smdk)',
       consigneeName: 'deva',
-      chaName: 'suhas',
+      chaName: 'sahas',
       orderDescription: 'process the order',
       status: 'Pending',
       reason: '',

@@ -64,6 +64,7 @@ const Icon: React.FC<IconProps> = ({ name, size, color }) => {
       lock:"🔒",
       more:"⋯",
       info:"ℹ️",
+      building:"🏢",
     }
     return icons[iconName] || "?"
   }

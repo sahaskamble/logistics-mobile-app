@@ -3,10 +3,12 @@
 import { useState } from "react"
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from "react-native"
 import Icon from "../components/Icon"
+import Sidebar from "../components/Sidebar"
 
 interface ChatPageScreenProps {
   onNavigate: (screen: string) => void
   onBack: () => void
+  onLogout?: () => void
 }
 
 interface ChatSession {
@@ -16,17 +18,18 @@ interface ChatSession {
   lastUpdated: string
 }
 
-const ChatPageScreen = ({ onNavigate, onBack }: ChatPageScreenProps) => {
+const ChatPageScreen = ({ onNavigate, onBack, onLogout = () => {} }: ChatPageScreenProps) => {
+  const [sidebarVisible, setSidebarVisible] = useState(false)
   const [chatSessions] = useState<ChatSession[]>([
     {
       id: "1",
-      title: "Delivery Delay Issue",
+      title: "EIR copy pending",
       status: "Open",
       lastUpdated: "2 hours ago"
     },
     {
       id: "2", 
-      title: "Package Tracking Error",
+      title: "Order Make Urgently Process",
       status: "Closed",
       lastUpdated: "Yesterday"
     },
@@ -42,24 +45,21 @@ const ChatPageScreen = ({ onNavigate, onBack }: ChatPageScreenProps) => {
     "Track your shipment with tracking ID",
     "View delivery time estimates", 
     "Update delivery address",
-    "Report damaged packages"
   ]
 
   return (
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={onBack} style={styles.backButton}>
-          <Icon name="menu" size={25} color="white" />
+        <TouchableOpacity onPress={() => setSidebarVisible(true)} style={styles.menuButton}>
+          <Icon name="menu" size={24} color="white" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Chat Page</Text>
-        <View style={styles.headerIcons}>
-          <TouchableOpacity style={styles.headerIcon}>
-            <Icon name="bell" size={24} color="white" />
-          </TouchableOpacity>
-          <View style={styles.profileImage}>
-            <Icon name="user" size={20} color="white" />
-          </View>
+        <TouchableOpacity style={styles.notificationButton}>
+          <Icon name="notifications" size={24} color="white" />
+        </TouchableOpacity>
+        <View style={styles.profileButton}>
+          <Icon name="user" size={24} color="white" />
         </View>
       </View>
 
@@ -198,6 +198,14 @@ const ChatPageScreen = ({ onNavigate, onBack }: ChatPageScreenProps) => {
           <Text style={styles.navText}>Profile</Text>
         </TouchableOpacity>
       </View>
+
+      {/* Sidebar */}
+      <Sidebar
+        isVisible={sidebarVisible}
+        onClose={() => setSidebarVisible(false)}
+        onNavigate={onNavigate}
+        onLogout={onLogout}
+      />
     </View>
   )
 }
@@ -208,36 +216,40 @@ const styles = StyleSheet.create({
     backgroundColor: "#f5f5f5",
   },
   header: {
-    backgroundColor: "#4A90E2",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 20,
-    paddingTop: 10,
-    paddingBottom: 15,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#4A90E2',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    paddingTop: 50,
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
-  backButton: {
-    padding: 4,
+  menuButton: {
+    padding: 8,
+    marginRight: 12,
   },
   headerTitle: {
+    flex: 1,
     fontSize: 18,
-    fontWeight: "bold",
-    color: "white",
+    fontWeight: '600',
+    color: 'white',
+    textAlign: 'left',
   },
-  headerIcons: {
-    flexDirection: "row",
-    alignItems: "center",
+  notificationButton: {
+    padding: 8,
+    marginRight: 12,
   },
-  headerIcon: {
-    marginRight: 15,
-  },
-  profileImage: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: "rgba(255,255,255,0.3)",
-    justifyContent: "center",
-    alignItems: "center",
+  profileButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   content: {
     flex: 1,

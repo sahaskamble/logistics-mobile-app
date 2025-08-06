@@ -64,16 +64,14 @@ const CreateWeightmentSlipScreen = ({ onNavigate, onBack }: CreateWeightmentSlip
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.backButton} onPress={onBack}>
-          <Icon name="arrowright" size={20} color="white" />
+          <Icon name="arrow-left" size={24} color="white" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Create Weightment Slip</Text>
-        <View style={styles.headerRight}>
-          <TouchableOpacity style={styles.notificationButton}>
-            <Icon name="bell" size={20} color="white" />
-          </TouchableOpacity>
-          <View style={styles.profileImage}>
-            <Icon name="user" size={16} color="white" />
-          </View>
+        <TouchableOpacity style={styles.notificationButton}>
+          <Icon name="notifications" size={24} color="white" />
+        </TouchableOpacity>
+        <View style={styles.profileButton}>
+          <Icon name="user" size={24} color="white" />
         </View>
       </View>
 
@@ -354,39 +352,40 @@ const styles = StyleSheet.create({
     backgroundColor: "#f8fafc",
   },
   header: {
-    backgroundColor: "#4A90E2",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#4A90E2',
     paddingHorizontal: 16,
-    paddingTop: 15,
-    paddingBottom: 16,
-    shadowColor: "#4A90E2",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
-    minHeight: 70,
+    paddingVertical: 12,
+    paddingTop: 50,
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   backButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: "rgba(255,255,255,0.2)",
-    justifyContent: "center",
-    alignItems: "center",
-    transform: [{ rotate: "180deg" }],
+    padding: 8,
+    marginRight: 12,
   },
   headerTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "white",
     flex: 1,
-    textAlign: "center",
+    fontSize: 18,
+    fontWeight: '600',
+    color: 'white',
+    textAlign: 'left',
   },
-  headerRight: {
-    flexDirection: "row",
-    alignItems: "center",
+  notificationButton: {
+    padding: 8,
+    marginRight: 12,
+  },
+  profileButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   notificationButton: {
     marginRight: 12,

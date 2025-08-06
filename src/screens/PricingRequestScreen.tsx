@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+
+import React, { useState, useRef, useEffect } from 'react'
 import {
   View,
   Text,
@@ -11,6 +12,7 @@ import {
   FlatList,
   RefreshControl,
   Image,
+  Animated,
 } from 'react-native'
 import Icon from '../components/Icon'
 import Sidebar from '../components/Sidebar'
@@ -54,6 +56,63 @@ const PricingRequestScreen: React.FC<PricingRequestScreenProps> = ({
   const [searchQuery, setSearchQuery] = useState('')
   const [showFilterModal, setShowFilterModal] = useState(false)
   const [selectedFilter, setSelectedFilter] = useState('All Columns')
+
+  // Animation values
+  const contentOpacity = useRef(new Animated.Value(1)).current
+  const contentScale = useRef(new Animated.Value(1)).current
+  const overlayOpacity = useRef(new Animated.Value(0)).current
+
+  // Animate content when sidebar opens/closes
+  useEffect(() => {
+    if (sidebarVisible) {
+      Animated.parallel([
+        Animated.timing(contentOpacity, {
+          toValue: 0.4,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+        Animated.timing(contentScale, {
+          toValue: 0.95,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+        Animated.timing(overlayOpacity, {
+          toValue: 1,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+      ]).start()
+    } else {
+      Animated.parallel([
+        Animated.timing(contentOpacity, {
+          toValue: 1,
+          duration: 250,
+          useNativeDriver: true,
+        }),
+        Animated.timing(contentScale, {
+          toValue: 1,
+          duration: 250,
+          useNativeDriver: true,
+        }),
+        Animated.timing(overlayOpacity, {
+          toValue: 0,
+          duration: 250,
+          useNativeDriver: true,
+        }),
+      ]).start()
+    }
+  }, [sidebarVisible, contentOpacity, contentScale, overlayOpacity])
+
+  // Close filter modal when sidebar opens
+  const handleSidebarOpen = () => {
+    setShowFilterModal(false)
+    setSidebarVisible(true)
+  }
+
+  // Close sidebar and re-enable interactions
+  const handleSidebarClose = () => {
+    setSidebarVisible(false)
+  }
 
   // Status cards - same as MyOrdersScreen
   const pricingRequestStatuses: PricingRequestStatus[] = [
@@ -321,6 +380,11 @@ const PricingRequestScreen: React.FC<PricingRequestScreenProps> = ({
       onRequestClose={() => setShowFilterModal(false)}
     >
       <View style={styles.modalOverlay}>
+        <TouchableOpacity
+          style={styles.modalBackdrop}
+          activeOpacity={1}
+          onPress={() => setShowFilterModal(false)}
+        />
         <View style={styles.filterModalContent}>
           <View style={styles.modalHeader}>
             <Text style={styles.modalTitle}>Filter Options</Text>
@@ -362,112 +426,150 @@ const PricingRequestScreen: React.FC<PricingRequestScreenProps> = ({
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#4A90E2" />
-      
-      {/* Header - Same as Home Screen */}
-      <View style={styles.header}>
-        <View style={styles.headerLeft}>
-          <TouchableOpacity onPress={() => setSidebarVisible(true)} style={styles.menuButton}>
+
+      {/* Content Container with Animated Blur Effect */}
+      <Animated.View
+        style={[
+          styles.contentWrapper,
+          {
+            opacity: contentOpacity,
+            transform: [{ scale: contentScale }],
+            pointerEvents: sidebarVisible ? 'none' : 'auto'
+          }
+        ]}
+      >
+        {/* Header */}
+        <View style={styles.header}>
+          <TouchableOpacity onPress={handleSidebarOpen} style={styles.menuButton}>
             <Icon name="menu" size={24} color="white" />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Pricing Request</Text>
-        </View>
-        <View style={styles.headerRight}>
-          <TouchableOpacity style={styles.notificationButton}>
+          <TouchableOpacity
+            style={styles.notificationButton}
+            disabled={sidebarVisible}
+          >
             <Icon name="notifications" size={24} color="white" />
-            <View style={styles.notificationBadge}>
-              <Text style={styles.notificationBadgeText}>3</Text>
-            </View>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.profileButton}>
-            <View style={styles.profileAvatar}>
-              <Text style={styles.profileAvatarText}>U</Text>
-            </View>
-          </TouchableOpacity>
-        </View>
-      </View>
-
-      {/* Status Cards - Same as MyOrdersScreen */}
-      <View style={styles.statusSection}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.statusScrollView}>
-          {pricingRequestStatuses.map(renderStatusCard)}
-        </ScrollView>
-      </View>
-
-      {/* Search and Filter Section */}
-      <View style={styles.searchAndFilterSection}>
-        <View style={styles.searchContainer}>
-          <View style={styles.searchInputContainer}>
-            <Icon name="search" size={18} color="#666" />
-            <TextInput
-              style={styles.searchInput}
-              placeholder="Search by customer name, CFS provider..."
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-              placeholderTextColor="#999"
-            />
-            {searchQuery.length > 0 && (
-              <TouchableOpacity onPress={() => setSearchQuery('')} style={styles.clearButton}>
-                <Icon name="close" size={16} color="#999" />
-              </TouchableOpacity>
-            )}
+          <View style={styles.profileButton}>
+            <Icon name="user" size={24} color="white" />
           </View>
         </View>
 
-        <View style={styles.filterContainer}>
-          <TouchableOpacity
-            style={styles.filterDropdown}
-            onPress={() => setShowFilterModal(true)}
-          >
-            <Text style={styles.filterDropdownText}>{selectedFilter}</Text>
-            <Icon name="chevrondown" size={14} color="#666" />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.filterButton}>
-            <Icon name="filter" size={16} color="white" />
-            <Text style={styles.filterButtonText}>Filter</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+        {/* Main Content Container */}
+        <View style={styles.mainContent}>
+          {/* Status Cards - Same as MyOrdersScreen */}
+          <View style={styles.statusSection}>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              style={styles.statusScrollView}
+              scrollEnabled={!sidebarVisible}
+            >
+              {pricingRequestStatuses.map(renderStatusCard)}
+            </ScrollView>
+          </View>
 
-      {/* Pricing Requests List */}
-      <FlatList
-        data={filteredRequests}
-        keyExtractor={(item) => item.id}
-        renderItem={renderPricingRequestItem}
-        style={styles.requestsList}
-        showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            colors={['#4A90E2']}
-            tintColor="#4A90E2"
+          {/* Search and Filter Section */}
+          <View style={styles.searchAndFilterSection}>
+            <View style={styles.searchContainer}>
+              <View style={styles.searchInputContainer}>
+                <Icon name="search" size={18} color="#666" />
+                <TextInput
+                  style={styles.searchInput}
+                  placeholder="Search by customer name, CFS provider..."
+                  value={searchQuery}
+                  onChangeText={setSearchQuery}
+                  placeholderTextColor="#999"
+                  editable={!sidebarVisible}
+                />
+                {searchQuery.length > 0 && (
+                  <TouchableOpacity
+                    onPress={() => setSearchQuery('')}
+                    style={styles.clearButton}
+                    disabled={sidebarVisible}
+                  >
+                    <Icon name="close" size={16} color="#999" />
+                  </TouchableOpacity>
+                )}
+              </View>
+            </View>
+
+            <View style={styles.filterContainer}>
+              <TouchableOpacity
+                style={styles.filterDropdown}
+                onPress={() => !sidebarVisible && setShowFilterModal(true)}
+                disabled={sidebarVisible}
+              >
+                <Text style={styles.filterDropdownText}>{selectedFilter}</Text>
+                <Icon name="chevrondown" size={14} color="#666" />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.filterButton, sidebarVisible && styles.filterButtonDisabled]}
+                disabled={sidebarVisible}
+              >
+                <Icon name="building" size={16} color="white" />
+                <Text style={styles.filterButtonText}>Provider</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* Pricing Requests List */}
+          <FlatList
+            data={filteredRequests}
+            keyExtractor={(item) => item.id}
+            renderItem={renderPricingRequestItem}
+            style={styles.requestsList}
+            showsVerticalScrollIndicator={false}
+            scrollEnabled={!sidebarVisible}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+                colors={['#4A90E2']}
+                tintColor="#4A90E2"
+                enabled={!sidebarVisible}
+              />
+            }
+            contentContainerStyle={styles.requestsListContent}
           />
-        }
-        contentContainerStyle={styles.requestsListContent}
+        </View>
+      </Animated.View>
+
+      {/* Animated Sidebar Overlay - Only visible when sidebar is open */}
+      <Animated.View
+        style={[
+          styles.sidebarOverlay,
+          {
+            opacity: overlayOpacity,
+            pointerEvents: sidebarVisible ? 'auto' : 'none'
+          }
+        ]}
       />
 
-      {/* Bottom Navigation - Same as Home Screen */}
-      <View style={styles.bottomNav}>
-        <TouchableOpacity style={styles.navItem} onPress={onBack}>
-          <Icon name="home" size={24} color="#999" />
-          <Text style={styles.navText}>Home</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem} onPress={() => onNavigate("dashboard")}>
-          <Icon name="grid" size={24} color="#999" />
-          <Text style={styles.navText}>Dashboard</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.addButton} onPress={() => onNavigate("create-pricing-request")}>
-          <Icon name="plus" size={24} color="white" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem} onPress={() => onNavigate("providers")}>
-          <Icon name="truck" size={24} color="#999" />
-          <Text style={styles.navText}>Provider</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem} onPress={() => onNavigate("profile")}>
-          <Icon name="user" size={24} color="#999" />
-          <Text style={styles.navText}>Profile</Text>
-        </TouchableOpacity>
-      </View>
+      {/* Bottom Navigation - Hidden when sidebar is open */}
+      {!sidebarVisible && (
+        <View style={styles.bottomNav}>
+          <TouchableOpacity style={styles.navItem} onPress={onBack}>
+            <Icon name="home" size={24} color="#999" />
+            <Text style={styles.navText}>Home</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.navItem} onPress={() => onNavigate("dashboard")}>
+            <Icon name="grid" size={24} color="#999" />
+            <Text style={styles.navText}>Dashboard</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.addButton} onPress={() => onNavigate("create-pricing-request")}>
+            <Icon name="plus" size={24} color="white" />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.navItem} onPress={() => onNavigate("providers")}>
+            <Icon name="truck" size={24} color="#999" />
+            <Text style={styles.navText}>Provider</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.navItem} onPress={() => onNavigate("profile")}>
+            <Icon name="user" size={24} color="#999" />
+            <Text style={styles.navText}>Profile</Text>
+          </TouchableOpacity>
+        </View>
+      )}
 
       {/* Modals */}
       {renderFilterModal()}
@@ -475,7 +577,7 @@ const PricingRequestScreen: React.FC<PricingRequestScreenProps> = ({
       {/* Sidebar */}
       <Sidebar
         isVisible={sidebarVisible}
-        onClose={() => setSidebarVisible(false)}
+        onClose={handleSidebarClose}
         onNavigate={onNavigate}
         onLogout={onLogout}
       />
@@ -489,73 +591,55 @@ const styles = StyleSheet.create({
     backgroundColor: '#F8F9FA',
   },
   header: {
-    backgroundColor: '#4A90E2',
-    paddingTop: 50,
-    paddingBottom: 16,
-    paddingHorizontal: 20,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    backgroundColor: '#4A90E2',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    paddingTop: 50,
     elevation: 4,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.1,
     shadowRadius: 4,
-  },
-  headerLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-  },
-  headerRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
   },
   menuButton: {
     padding: 8,
     marginRight: 12,
   },
   headerTitle: {
-    fontSize: 20,
+    flex: 1,
+    fontSize: 18,
     fontWeight: '600',
     color: 'white',
+    textAlign: 'left',
   },
   notificationButton: {
     padding: 8,
     marginRight: 12,
-    position: 'relative',
-  },
-  notificationBadge: {
-    position: 'absolute',
-    top: 4,
-    right: 4,
-    backgroundColor: '#FF4444',
-    borderRadius: 8,
-    minWidth: 16,
-    height: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  notificationBadgeText: {
-    fontSize: 10,
-    fontWeight: '600',
-    color: 'white',
   },
   profileButton: {
-    padding: 4,
-  },
-  profileAvatar: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     backgroundColor: 'rgba(255,255,255,0.2)',
     justifyContent: 'center',
     alignItems: 'center',
   },
-  profileAvatarText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: 'white',
+  contentWrapper: {
+    flex: 1,
+  },
+  sidebarOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    zIndex: 999, // Just below sidebar but above content
+  },
+  mainContent: {
+    flex: 1,
   },
   statusSection: {
     paddingHorizontal: 16,
@@ -674,6 +758,10 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: 'white',
+  },
+  filterButtonDisabled: {
+    backgroundColor: '#CCCCCC',
+    opacity: 0.6,
   },
   requestsList: {
     flex: 1,
@@ -876,10 +964,18 @@ const styles = StyleSheet.create({
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 20,
+    zIndex: 2000, // Higher than sidebar
+  },
+  modalBackdrop: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.5)',
   },
   filterModalContent: {
     backgroundColor: 'white',
@@ -887,6 +983,12 @@ const styles = StyleSheet.create({
     padding: 20,
     width: '100%',
     maxHeight: '60%',
+    elevation: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    zIndex: 2001,
   },
   modalHeader: {
     flexDirection: 'row',

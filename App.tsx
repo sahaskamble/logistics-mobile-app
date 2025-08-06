@@ -23,6 +23,12 @@ import MyOrdersScreen from "./src/screens/MyOrdersScreen"
 import CreateNewOrderScreen from "./src/screens/CreateNewOrderScreen"
 import SignUpScreen from "./src/screens/SignUpScreen"
 import PricingRequestScreen from "./src/screens/PricingRequestScreen"
+import ServiceRequestScreen from "./src/screens/ServiceRequestScreen"
+import TrackTraceScreen from "./src/screens/TrackTraceScreen"
+import EIRCopyRequestScreen from "./src/screens/EIRCopyRequestScreen"
+import ChequeAcceptanceScreen from "./src/screens/ChequeAcceptanceScreen"
+import ProformaInvoiceScreen from "./src/screens/ProformaInvoiceScreen"
+import CreateProformaRequestScreen from "./src/screens/CreateProformaRequestScreen"
 import { ServiceProvider } from "./src/data/serviceProviders"
 
 const App = () => {
@@ -203,6 +209,67 @@ const App = () => {
           onBack={() => setCurrentScreen("home")}
           onNavigate={setCurrentScreen}
           onLogout={handleLogout}
+        />
+      case "service-request":
+      case "3pl-cfs-service-request":
+      case "3pl-warehouse-service-request":
+      case "3pl-transport-service":
+      case "custom-cfs-service-request":
+      case "custom-warehouse-service-request":
+      case "custom-transport-service":
+      case "driver-management":
+        return <ServiceRequestScreen
+          onBack={() => setCurrentScreen("home")}
+          onNavigate={setCurrentScreen}
+          onLogout={handleLogout}
+        />
+      case "track-trace":
+      case "3pl-cfs-track-trace":
+      case "3pl-warehouse-track-trace":
+      case "custom-cfs-track-trace":
+      case "custom-warehouse-track-trace":
+        return <TrackTraceScreen
+          onBack={() => setCurrentScreen("home")}
+          onNavigate={setCurrentScreen}
+          onLogout={handleLogout}
+        />
+      case "eir-request":
+      case "3pl-cfs-eir-request":
+      case "3pl-warehouse-eir-request":
+      case "custom-cfs-eir-request":
+      case "custom-warehouse-eir-request":
+        return <EIRCopyRequestScreen
+          onBack={() => setCurrentScreen("home")}
+          onNavigate={setCurrentScreen}
+          onLogout={handleLogout}
+        />
+      case "cheque-acceptance":
+      case "3pl-cfs-cheque-acceptance":
+      case "3pl-warehouse-cheque-acceptance":
+      case "custom-cfs-cheque-acceptance":
+      case "custom-warehouse-cheque-acceptance":
+        return <ChequeAcceptanceScreen
+          onBack={() => setCurrentScreen("home")}
+          onNavigate={setCurrentScreen}
+          onLogout={handleLogout}
+        />
+      case "proforma-invoice":
+      case "3pl-cfs-proforma-invoice":
+      case "3pl-warehouse-proforma-invoice":
+      case "custom-cfs-proforma-invoice":
+      case "custom-warehouse-proforma-invoice":
+        return <ProformaInvoiceScreen
+          onBack={() => setCurrentScreen("home")}
+          onNavigate={setCurrentScreen}
+          onLogout={handleLogout}
+        />
+      case "create-proforma-request":
+        return <CreateProformaRequestScreen
+          onBack={() => setCurrentScreen("proforma-invoice")}
+          onSave={(requestData) => {
+            console.log('Proforma request created:', requestData)
+            setCurrentScreen("proforma-invoice")
+          }}
         />
       default:
         return <HomeScreen onNavigate={setCurrentScreen} />

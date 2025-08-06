@@ -87,7 +87,6 @@ const Sidebar = ({ isVisible, onClose, onNavigate, onLogout }: SidebarProps) => 
         { id: "tax-invoice", title: "Tax Invoice" },
         { id: "eir-request", title: "EIR Request" },
         { id: "special-equipment", title: "Special Equipment" },
-        { id: "job-order-update", title: "Job Order Update" },
         { id: "cheque-acceptance", title: "Cheque Acceptance" },
         { id: "container-staging", title: "Container Staging" },
         { id: "proforma-invoice", title: "Proforma Invoice" }
@@ -110,7 +109,6 @@ const Sidebar = ({ isVisible, onClose, onNavigate, onLogout }: SidebarProps) => 
         { id: "tax-invoice", title: "Tax Invoice" },
         { id: "eir-request", title: "EIR Request" },
         { id: "special-equipment", title: "Special Equipment" },
-        { id: "job-order-update", title: "Job Order Update" },
         { id: "cheque-acceptance", title: "Cheque Acceptance" },
         { id: "container-staging", title: "Container Staging" },
         { id: "proforma-invoice", title: "Proforma Invoice" }
@@ -152,7 +150,6 @@ const Sidebar = ({ isVisible, onClose, onNavigate, onLogout }: SidebarProps) => 
             { id: "3pl-cfs-tax-invoice", title: "Tax Invoice" },
             { id: "3pl-cfs-eir-request", title: "EIR Request" },
             { id: "3pl-cfs-special-equipment", title: "Special Equipment" },
-            { id: "3pl-cfs-job-order-update", title: "Job Order Update" },
             { id: "3pl-cfs-cheque-acceptance", title: "Cheque Acceptance" },
             { id: "3pl-cfs-container-staging", title: "Container Staging" },
             { id: "3pl-cfs-proforma-invoice", title: "Proforma Invoice" }
@@ -174,7 +171,6 @@ const Sidebar = ({ isVisible, onClose, onNavigate, onLogout }: SidebarProps) => 
             { id: "3pl-warehouse-tax-invoice", title: "Tax Invoice" },
             { id: "3pl-warehouse-eir-request", title: "EIR Request" },
             { id: "3pl-warehouse-special-equipment", title: "Special Equipment" },
-            { id: "3pl-warehouse-job-order-update", title: "Job Order Update" },
             { id: "3pl-warehouse-cheque-acceptance", title: "Cheque Acceptance" },
             { id: "3pl-warehouse-container-staging", title: "Container Staging" },
             { id: "3pl-warehouse-proforma-invoice", title: "Proforma Invoice" }
@@ -217,7 +213,6 @@ const Sidebar = ({ isVisible, onClose, onNavigate, onLogout }: SidebarProps) => 
             { id: "custom-cfs-tax-invoice", title: "Tax Invoice" },
             { id: "custom-cfs-eir-request", title: "EIR Request" },
             { id: "custom-cfs-special-equipment", title: "Special Equipment" },
-            { id: "custom-cfs-job-order-update", title: "Job Order Update" },
             { id: "custom-cfs-cheque-acceptance", title: "Cheque Acceptance" },
             { id: "custom-cfs-container-staging", title: "Container Staging" },
             { id: "custom-cfs-proforma-invoice", title: "Proforma Invoice" }
@@ -239,7 +234,6 @@ const Sidebar = ({ isVisible, onClose, onNavigate, onLogout }: SidebarProps) => 
             { id: "custom-warehouse-tax-invoice", title: "Tax Invoice" },
             { id: "custom-warehouse-eir-request", title: "EIR Request" },
             { id: "custom-warehouse-special-equipment", title: "Special Equipment" },
-            { id: "custom-warehouse-job-order-update", title: "Job Order Update" },
             { id: "custom-warehouse-cheque-acceptance", title: "Cheque Acceptance" },
             { id: "custom-warehouse-container-staging", title: "Container Staging" },
             { id: "custom-warehouse-proforma-invoice", title: "Proforma Invoice" }

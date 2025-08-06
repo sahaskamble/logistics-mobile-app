@@ -120,26 +120,6 @@ const PriorityMovementScreen = ({ onNavigate, onBack }: PriorityMovementScreenPr
         </View>
       </View>
 
-      {/* Tab Navigation */}
-      <View style={styles.tabContainer}>
-        <TouchableOpacity
-          style={[styles.tab, activeTab === "Requests" && styles.activeTab]}
-          onPress={() => setActiveTab("Requests")}
-        >
-          <Text style={[styles.tabText, activeTab === "Requests" && styles.activeTabText]}>
-            Requests
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.tab, activeTab === "Uploads" && styles.activeTab]}
-          onPress={() => setActiveTab("Uploads")}
-        >
-          <Text style={[styles.tabText, activeTab === "Uploads" && styles.activeTabText]}>
-            Uploads
-          </Text>
-        </TouchableOpacity>
-      </View>
-
       {/* Stats Cards */}
       <View style={styles.statsContainer}>
         {statsData.map((stat, index) => (
