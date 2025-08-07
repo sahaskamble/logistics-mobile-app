@@ -1,8 +1,10 @@
 "use client"
 
-import { useState } from "react"
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView } from "react-native"
+import { useState, useRef, useEffect } from "react"
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Animated, Dimensions, StatusBar } from "react-native"
 import Icon from "../components/Icon"
+
+const { width, height } = Dimensions.get('window')
 
 interface OnboardingScreenProps {
   onComplete: () => void
@@ -20,6 +22,31 @@ const OnboardingScreen = ({ onComplete, onNavigateToSignIn }: OnboardingScreenPr
     email: "",
     password: "",
   })
+
+  // Animation values
+  const fadeAnim = useRef(new Animated.Value(0)).current
+  const slideAnim = useRef(new Animated.Value(50)).current
+  const scaleAnim = useRef(new Animated.Value(0.9)).current
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 800,
+        useNativeDriver: true,
+      }),
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 800,
+        useNativeDriver: true,
+      }),
+      Animated.timing(scaleAnim, {
+        toValue: 1,
+        duration: 800,
+        useNativeDriver: true,
+      }),
+    ]).start()
+  }, [currentStep])
   const [uploadingDocuments, setUploadingDocuments] = useState({
     panCard: false,
     gstCertificate: false,
@@ -189,72 +216,139 @@ const OnboardingScreen = ({ onComplete, onNavigateToSignIn }: OnboardingScreenPr
 
   const renderStep1 = () => (
     <View style={styles.stepContainer}>
-      <Text style={styles.stepTitle}> Welcome to Link My Logistics </Text>
-      <Text style={styles.stepSubtitle}>Let's get started by verifying your details.</Text>
-      
-      <View style={styles.formContainer}>
+      {/* Logo Section */}
+      <View style={styles.logoSection}>
+        <View style={styles.logoContainer}>
+          <View style={styles.logoCircle}>
+            <View style={styles.logoInner}>
+              <Icon name="truck" size={32} color="#FFFFFF" />
+            </View>
+            <View style={styles.logoBadge}>
+              <Icon name="plus" size={12} color="#FFFFFF" />
+            </View>
+          </View>
+        </View>
+        <Text style={styles.welcomeTitle}>
+          Welcome to <Text style={styles.brandText}>Link My Logistics</Text>
+        </Text>
+        <Text style={styles.welcomeSubtitle}>
+          Let's get started by verifying your details
+        </Text>
+        <View style={styles.benefitsContainer}>
+          <View style={styles.benefitItem}>
+            <Icon name="check" size={14} color="#10B981" />
+            <Text style={styles.benefitText}>Quick Setup</Text>
+          </View>
+          <View style={styles.benefitItem}>
+            <Icon name="check" size={14} color="#10B981" />
+            <Text style={styles.benefitText}>Secure Platform</Text>
+          </View>
+          <View style={styles.benefitItem}>
+            <Icon name="check" size={14} color="#10B981" />
+            <Text style={styles.benefitText}>24/7 Support</Text>
+          </View>
+        </View>
+      </View>
+
+      {/* Form Card */}
+      <View style={styles.formCard}>
         <View style={styles.inputGroup}>
-          <Text style={styles.inputLabel}>Full Name</Text>
-          <TextInput
-            style={[styles.textInput, errors.fullName ? styles.textInputError : null]}
-            placeholder="Enter your full name"
-            placeholderTextColor="#999"
-            value={formData.fullName}
-            onChangeText={(text) => updateFormData('fullName', text)}
-          />
+          <Text style={styles.inputLabel}>
+            <Icon name="user" size={14} color="#3B82F6" /> Full Name *
+          </Text>
+          <View style={styles.inputWrapper}>
+            <TextInput
+              style={[styles.textInput, errors.fullName ? styles.textInputError : null]}
+              placeholder="Enter your full name"
+              placeholderTextColor="#818385ff"
+              value={formData.fullName}
+              onChangeText={(text) => updateFormData('fullName', text)}
+              autoCapitalize="words"
+            />
+            <View style={styles.inputIcon}>
+              <Icon name="user" size={18} color="#60A5FA" />
+            </View>
+          </View>
           {errors.fullName ? <Text style={styles.errorText}>{errors.fullName}</Text> : null}
         </View>
 
         <View style={styles.inputGroup}>
-          <Text style={styles.inputLabel}>Mobile Number</Text>
-          <TextInput
-            style={[styles.textInput, errors.mobileNumber ? styles.textInputError : null]}
-            placeholder="+91 XXXXX XXXXX"
-            placeholderTextColor="#999"
-            keyboardType="phone-pad"
-            value={formData.mobileNumber}
-            onChangeText={(text) => updateFormData('mobileNumber', text)}
-          />
+          <Text style={styles.inputLabel}>
+            <Icon name="phone" size={14} color="#3B82F6" /> Mobile Number *
+          </Text>
+          <View style={styles.inputWrapper}>
+            <TextInput
+              style={[styles.textInput, errors.mobileNumber ? styles.textInputError : null]}
+              placeholder="+91 XXXXX XXXXX"
+              placeholderTextColor="#818385ff"
+              keyboardType="phone-pad"
+              value={formData.mobileNumber}
+              onChangeText={(text) => updateFormData('mobileNumber', text)}
+            />
+            <View style={styles.inputIcon}>
+              <Icon name="phone" size={18} color="#60A5FA" />
+            </View>
+          </View>
           {errors.mobileNumber ? <Text style={styles.errorText}>{errors.mobileNumber}</Text> : null}
         </View>
 
         <View style={styles.inputGroup}>
-          <Text style={styles.inputLabel}>Company Name</Text>
-          <TextInput
-            style={[styles.textInput, errors.companyName ? styles.textInputError : null]}
-            placeholder="Enter your company name"
-            placeholderTextColor="#999"
-            value={formData.companyName}
-            onChangeText={(text) => updateFormData('companyName', text)}
-          />
+          <Text style={styles.inputLabel}>
+            <Icon name="building" size={14} color="#3B82F6" /> Company Name *
+          </Text>
+          <View style={styles.inputWrapper}>
+            <TextInput
+              style={[styles.textInput, errors.companyName ? styles.textInputError : null]}
+              placeholder="Enter your company name"
+              placeholderTextColor="#818385ff"
+              value={formData.companyName}
+              onChangeText={(text) => updateFormData('companyName', text)}
+              autoCapitalize="words"
+            />
+            <View style={styles.inputIcon}>
+              <Icon name="building" size={18} color="#60A5FA" />
+            </View>
+          </View>
           {errors.companyName ? <Text style={styles.errorText}>{errors.companyName}</Text> : null}
         </View>
 
         <View style={styles.inputGroup}>
-          <Text style={styles.inputLabel}>Email Address</Text>
-          <TextInput
-            style={[styles.textInput, errors.email ? styles.textInputError : null]}
-            placeholder="Enter your email address"
-            placeholderTextColor="#999"
-            keyboardType="email-address"
-            autoCapitalize="none"
-            value={formData.email}
-            onChangeText={(text) => updateFormData('email', text)}
-          />
+          <Text style={styles.inputLabel}>
+            <Icon name="mail" size={14} color="#3B82F6" /> Email Address *
+          </Text>
+          <View style={styles.inputWrapper}>
+            <TextInput
+              style={[styles.textInput, errors.email ? styles.textInputError : null]}
+              placeholder="your.email@company.com"
+              placeholderTextColor="#818385ff"
+              keyboardType="email-address"
+              autoCapitalize="none"
+              value={formData.email}
+              onChangeText={(text) => updateFormData('email', text)}
+            />
+            <View style={styles.inputIcon}>
+              <Icon name="mail" size={18} color="#60A5FA" />
+            </View>
+          </View>
           {errors.email ? <Text style={styles.errorText}>{errors.email}</Text> : null}
         </View>
 
         <View style={styles.inputGroup}>
-          <Text style={styles.inputLabel}>Password</Text>
+          <Text style={styles.inputLabel}>
+            <Icon name="lock" size={14} color="#3B82F6" /> Password *
+          </Text>
           <View style={styles.passwordContainer}>
             <TextInput
               style={[styles.passwordInput, errors.password ? styles.textInputError : null]}
-              placeholder="Create a password"
-              placeholderTextColor="#999"
+              placeholder="Create a secure password"
+              placeholderTextColor="#818385ff"
               secureTextEntry={!showPassword}
               value={formData.password}
               onChangeText={(text) => updateFormData('password', text)}
             />
+            <View style={styles.passwordIcon}>
+              <Icon name="lock" size={18} color="#60A5FA" />
+            </View>
             <TouchableOpacity
               style={styles.eyeButton}
               onPress={() => setShowPassword(!showPassword)}
@@ -263,19 +357,25 @@ const OnboardingScreen = ({ onComplete, onNavigateToSignIn }: OnboardingScreenPr
             </TouchableOpacity>
           </View>
           {errors.password ? <Text style={styles.errorText}>{errors.password}</Text> : null}
+          <Text style={styles.passwordHint}>
+            Minimum 6 characters with letters and numbers
+          </Text>
         </View>
       </View>
 
       <TouchableOpacity style={styles.primaryButton} onPress={nextStep}>
+
         <Text style={styles.primaryButtonText}>Continue</Text>
-        <Icon name="arrowright" size={29} color="white" />
+        <Icon name="arrowright" size={20} color="white" />
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.linkButton} onPress={onNavigateToSignIn}>
-        <Text style={styles.linkButtonText}>Already have an account ? &nbsp;<Text style={[styles.linkButtonText, { color: '#4A90E2' }]}>Sign In</Text></Text>
+        <Text style={styles.linkButtonText}>
+          Already have an account? <Text style={styles.linkButtonHighlight}>Sign In</Text>
+        </Text>
       </TouchableOpacity>
     </View>
-  ) 
+  )
 
   const renderStep2 = () => (
     <View style={styles.stepContainer}>
@@ -628,9 +728,43 @@ const OnboardingScreen = ({ onComplete, onNavigateToSignIn }: OnboardingScreenPr
 
   return (
     <View style={styles.container}>
-      <ScrollView style={styles.scrollContainer} showsVerticalScrollIndicator={false}>
-        {renderProgressBar()}
-        {renderCurrentStep()}
+      <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
+
+      {/* Background Pattern */}
+      <View style={styles.backgroundPattern}>
+        <View style={styles.backgroundCircle1} />
+        <View style={styles.backgroundCircle2} />
+        <View style={styles.backgroundGrid} />
+      </View>
+
+      <ScrollView
+        style={styles.scrollContainer}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Header with Progress */}
+        <Animated.View style={[
+          styles.header,
+          {
+            opacity: fadeAnim,
+            transform: [{ translateY: slideAnim }]
+          }
+        ]}>
+          {renderProgressBar()}
+        </Animated.View>
+
+        {/* Step Content */}
+        <Animated.View style={[
+          {
+            opacity: fadeAnim,
+            transform: [
+              { translateY: slideAnim },
+              { scale: scaleAnim }
+            ]
+          }
+        ]}>
+          {renderCurrentStep()}
+        </Animated.View>
       </ScrollView>
     </View>
   )
@@ -639,52 +773,83 @@ const OnboardingScreen = ({ onComplete, onNavigateToSignIn }: OnboardingScreenPr
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8fafc",
+    backgroundColor: '#FFFFFF',
+  },
+  backgroundPattern: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+  },
+  backgroundCircle1: {
+    position: 'absolute',
+    width: width * 0.8,
+    height: width * 0.8,
+    borderRadius: width * 0.4,
+    backgroundColor: 'rgba(59, 130, 246, 0.08)',
+    top: -width * 0.3,
+    right: -width * 0.2,
+  },
+  backgroundCircle2: {
+    position: 'absolute',
+    width: width * 0.6,
+    height: width * 0.6,
+    borderRadius: width * 0.3,
+    backgroundColor: 'rgba(147, 197, 253, 0.12)',
+    bottom: -width * 0.1,
+    left: -width * 0.2,
+  },
+  backgroundGrid: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    opacity: 0.02,
+    backgroundColor: 'transparent',
   },
   scrollContainer: {
     flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    paddingBottom: 40,
+  },
+  header: {
+    paddingHorizontal: 24,
+    paddingTop: 20,
   },
   progressContainer: {
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    paddingHorizontal: 40,
-    paddingTop: 60,
-    paddingBottom: 40,
+    paddingVertical: 32,
+  },
+  progressStepWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   progressBarContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   progressStep: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     justifyContent: "center",
     alignItems: "center",
+    borderWidth: 2,
+    shadowColor: '#3B82F6',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
   },
   progressStepActive: {
-    backgroundColor: "#4A90E2",
-    shadowColor: "#4A90E2",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
+    backgroundColor: "#3B82F6",
+    borderColor: "#3B82F6",
   },
   progressStepInactive: {
-    backgroundColor: "#E2E8F0",
-    borderWidth: 2,
-    borderColor: "#CBD5E0",
-  },
-  progressStepText: {
-    fontSize: 14,
-    fontWeight: "600",
-  },
-  progressStepTextActive: {
-    color: "white",
-  },
-  progressStepTextInactive: {
-    color: "#94A3B8",
+    backgroundColor: "#FFFFFF",
+    borderColor: "#E5E7EB",
   },
   progressLine: {
     width: 40,
@@ -692,14 +857,126 @@ const styles = StyleSheet.create({
     marginHorizontal: 8,
   },
   progressLineActive: {
-    backgroundColor: "#4A90E2",
+    backgroundColor: '#3B82F6',
   },
   progressLineInactive: {
-    backgroundColor: "#E2E8F0",
+    backgroundColor: '#E5E7EB',
+  },
+  progressStepText: {
+    fontSize: 16,
+    fontWeight: "700",
+  },
+  progressStepTextActive: {
+    color: "white",
+  },
+  progressStepTextInactive: {
+    color: "#94A3B8",
   },
   stepContainer: {
     paddingHorizontal: 24,
     paddingBottom: 40,
+  },
+  logoSection: {
+    alignItems: 'center',
+    paddingHorizontal: 24,
+    marginBottom: 40,
+  },
+  logoContainer: {
+    marginBottom: 32,
+    position: 'relative',
+  },
+  logoCircle: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: 'transparent',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#DBEAFE',
+  },
+  logoInner: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: '#3B82F6',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#3B82F6',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.25,
+    shadowRadius: 16,
+    elevation: 12,
+  },
+  logoBadge: {
+    position: 'absolute',
+    bottom: 5,
+    right: 5,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: '#10B981',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#FFFFFF',
+  },
+  welcomeTitle: {
+    fontSize: 24,
+    fontWeight: '800',
+    color: '#1E40AF',
+    marginBottom: 8,
+    textAlign: 'center',
+    letterSpacing: 0.5,
+  },
+  brandText: {
+    color: '#3B82F6',
+  },
+  welcomeSubtitle: {
+    fontSize: 16,
+    color: '#64748B',
+    textAlign: 'center',
+    marginBottom: 24,
+    fontWeight: '400',
+  },
+  benefitsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
+    gap: 16,
+  },
+  benefitItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  benefitText: {
+    fontSize: 12,
+    color: '#64748B',
+    fontWeight: '500',
+  },
+  formCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    padding: 24,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.1,
+    shadowRadius: 16,
+    elevation: 8,
+    marginBottom: 32,
   },
   stepTitle: {
     fontSize: 28,
@@ -723,49 +1000,77 @@ const styles = StyleSheet.create({
   },
   inputLabel: {
     fontSize: 14,
-    fontWeight: "600",
-    color: "#374151",
-    marginBottom: 8,
+    fontWeight: '600',
+    color: '#3B82F6',
+    marginBottom: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  inputWrapper: {
+    position: 'relative',
   },
   textInput: {
-    backgroundColor: "white",
-    borderRadius: 12,
-    padding: 16,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 18,
+    paddingLeft: 52,
     fontSize: 16,
-    borderWidth: 1,
-    borderColor: "#E2E8F0",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
+    borderWidth: 2,
+    borderColor: '#DBEAFE',
+    color: '#1E40AF',
+    shadowColor: '#3B82F6',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    elevation: 4,
+    fontWeight: '500',
   },
   textInputError: {
     borderColor: "#EF4444",
     borderWidth: 2,
   },
+  inputIcon: {
+    position: 'absolute',
+    left: 18,
+    top: 20,
+  },
   passwordContainer: {
     position: "relative",
   },
   passwordInput: {
-    backgroundColor: "white",
-    borderRadius: 12,
-    padding: 16,
-    paddingRight: 50,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 18,
+    paddingLeft: 52,
+    paddingRight: 54,
     fontSize: 16,
-    borderWidth: 1,
-    borderColor: "#E2E8F0",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
+    borderWidth: 2,
+    borderColor: '#DBEAFE',
+    color: '#1E40AF',
+    shadowColor: '#3B82F6',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    elevation: 4,
+    fontWeight: '500',
+  },
+  passwordIcon: {
+    position: 'absolute',
+    left: 18,
+    top: 20,
   },
   eyeButton: {
     position: "absolute",
-    right: 16,
-    top: 18,
+    right: 18,
+    top: 20,
     padding: 4,
+  },
+  passwordHint: {
+    fontSize: 12,
+    color: '#64748B',
+    marginTop: 8,
+    marginLeft: 4,
+    fontWeight: '400',
   },
   errorText: {
     fontSize: 12,
@@ -1195,39 +1500,44 @@ const styles = StyleSheet.create({
     lineHeight: 24,
   },
   primaryButton: {
-    backgroundColor: "#4A90E2",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#3B82F6",
     borderRadius: 16,
     padding: 18,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    shadowColor: "#4A90E2",
+    marginBottom: 20,
+    shadowColor: "#3B82F6",
     shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-    elevation: 8,
-    marginBottom: 16,
-    position: "relative",
+    shadowOpacity: 0.4,
+    shadowRadius: 16,
+    elevation: 12,
+    borderWidth: 1,
+    borderColor: "#DBEAFE",
+    gap: 12,
   },
   primaryButtonDisabled: {
-    backgroundColor: "#94A3B8",
-    shadowColor: "#94A3B8",
+    backgroundColor: "#64748B",
+    shadowColor: "#64748B",
   },
   primaryButtonText: {
-    fontSize: 20,
-    fontWeight: "600",
+    fontSize: 16,
+    fontWeight: "700",
     color: "white",
-    marginRight: 8,
+    letterSpacing: 0.5,
   },
   linkButton: {
-    padding: 12,
     alignItems: "center",
+    paddingVertical: 12,
   },
   linkButtonText: {
     fontSize: 14,
-    color: "#3e454cff",
-    fontWeight: "500",
-    marginLeft: 6,
+    color: "#64748B",
+    textAlign: "center",
+  },
+  linkButtonHighlight: {
+    color: '#3B82F6',
+    fontWeight: '600',
   },
   loadingSpinner: {
     width: 20,

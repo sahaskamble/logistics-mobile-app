@@ -3,10 +3,12 @@
 import { useState } from "react"
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, SafeAreaView, StatusBar } from "react-native"
 import Icon from "../components/Icon"
+import Sidebar from "../components/Sidebar"
 
 interface ReScanningScreenProps {
   onNavigate: (screen: string) => void
   onBack: () => void
+  onLogout?: () => void
 }
 
 interface ScanningRequest {
@@ -19,15 +21,55 @@ interface ScanningRequest {
   reason?: string
 }
 
-const ReScanningScreen = ({ onNavigate, onBack }: ReScanningScreenProps) => {
-  const [activeTab, setActiveTab] = useState<"Requests" | "Uploads">("Requests")
+interface ReScanningStatus {
+  id: string
+  title: string
+  count: number
+  color: string
+  backgroundColor: string
+  icon: string
+}
+
+const ReScanningScreen = ({ onNavigate, onBack, onLogout = () => {} }: ReScanningScreenProps) => {
+  const [sidebarVisible, setSidebarVisible] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
   const [filterBy, setFilterBy] = useState("All")
+  const [activeTab, setActiveTab] = useState("Requests")
 
-  const statsData = [
-    { label: "Approved", count: 24, color: "#4CAF50", icon: "✓" },
-    { label: "Pending", count: 13, color: "#FF9800", icon: "⏳" },
-    { label: "In Progress", count: 8, color: "#2196F3", icon: "🔄" }
+  // Status cards data - matching Container Staging design
+  const reScanningStatuses: ReScanningStatus[] = [
+    {
+      id: 'approved',
+      title: 'Approved',
+      count: 24,
+      color: '#4CAF50',
+      backgroundColor: '#E8F5E8',
+      icon: 'check',
+    },
+    {
+      id: 'pending',
+      title: 'Pending',
+      count: 13,
+      color: '#FF9800',
+      backgroundColor: '#FFF3E0',
+      icon: 'clock',
+    },
+    {
+      id: 'in-progress',
+      title: 'In Progress',
+      count: 8,
+      color: '#2196F3',
+      backgroundColor: '#E3F2FD',
+      icon: 'refresh',
+    },
+    {
+      id: 'rejected',
+      title: 'Rejected',
+      count: 2,
+      color: '#F44336',
+      backgroundColor: '#FFEBEE',
+      icon: 'close',
+    },
   ]
 
   const scanningRequests: ScanningRequest[] = [
@@ -94,64 +136,50 @@ const ReScanningScreen = ({ onNavigate, onBack }: ReScanningScreenProps) => {
     return matchesSearch && matchesFilter
   })
 
+  const renderStatusCard = (status: ReScanningStatus) => (
+    <TouchableOpacity
+      key={status.id}
+      style={[styles.statusCard, { backgroundColor: status.backgroundColor }]}
+      activeOpacity={0.7}
+    >
+      <View style={[styles.statusIcon, { backgroundColor: status.color }]}>
+        <Icon name={status.icon} size={20} color="white" />
+      </View>
+      <Text style={styles.statusTitle}>{status.title}</Text>
+      <Text style={[styles.statusCount, { color: status.color }]}>{status.count}</Text>
+    </TouchableOpacity>
+  )
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#4A90E2" />
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={onBack}>
-          <Icon name="arrowright" size={20} color="white" />
+        <TouchableOpacity onPress={() => setSidebarVisible(true)} style={styles.menuButton}>
+          <Icon name="menu" size={24} color="white" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Re-Scanning</Text>
-        <View style={styles.headerRight}>
-          <TouchableOpacity style={styles.notificationButton}>
-            <Icon name="bell" size={20} color="white" />
-          </TouchableOpacity>
-          <View style={styles.profileImage}>
-            <Icon name="user" size={16} color="white" />
-          </View>
+        <TouchableOpacity style={styles.notificationButton}>
+          <Icon name="notifications" size={24} color="white" />
+        </TouchableOpacity>
+        <View style={styles.profileButton}>
+          <Icon name="user" size={24} color="white" />
         </View>
       </View>
 
-      {/* Tab Navigation */}
-      <View style={styles.tabContainer}>
-        <TouchableOpacity
-          style={[styles.tab, activeTab === "Requests" && styles.activeTab]}
-          onPress={() => setActiveTab("Requests")}
-        >
-          <Text style={[styles.tabText, activeTab === "Requests" && styles.activeTabText]}>
-            Requests
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.tab, activeTab === "Uploads" && styles.activeTab]}
-          onPress={() => setActiveTab("Uploads")}
-        >
-          <Text style={[styles.tabText, activeTab === "Uploads" && styles.activeTabText]}>
-            Uploads
-          </Text>
-        </TouchableOpacity>
+      {/* Status Cards */}
+      <View style={styles.statusSection}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.statusScrollView}>
+          {reScanningStatuses.map(renderStatusCard)}
+        </ScrollView>
       </View>
 
-      {/* Stats Cards */}
-      <View style={styles.statsContainer}>
-        {statsData.map((stat, index) => (
-          <View key={index} style={styles.statCard}>
-            <View style={styles.statHeader}>
-              <Text style={styles.statLabel}>{stat.label}</Text>
-              <Text style={styles.statIcon}>{stat.icon}</Text>
-            </View>
-            <Text style={[styles.statCount, { color: stat.color }]}>{stat.count}</Text>
-          </View>
-        ))}
-      </View>
-
-      {/* New Request Button */}
-      <View style={styles.newRequestContainer}>
-        <TouchableOpacity 
-          style={styles.newRequestButton}
-          onPress={() => onNavigate("create-rescanning")}
-        >
+      {/* List Header */}
+      <View style={styles.listHeader}>
+        <View style={styles.listTitleContainer}>
+          <Text style={styles.listTitle}>Re-Scanning Requests</Text>
+        </View>
+        <TouchableOpacity style={styles.newRequestButton} onPress={() => onNavigate("create-rescanning")}>
           <Icon name="plus" size={16} color="white" />
           <Text style={styles.newRequestText}>New Request</Text>
         </TouchableOpacity>
@@ -163,15 +191,12 @@ const ReScanningScreen = ({ onNavigate, onBack }: ReScanningScreenProps) => {
           <Icon name="search" size={16} color="#666" />
           <TextInput
             style={styles.searchInput}
-            placeholder="Search request ID"
+            placeholder="Search re-scanning requests..."
             placeholderTextColor="#999"
             value={searchQuery}
             onChangeText={setSearchQuery}
           />
         </View>
-        <TouchableOpacity style={styles.filterButton}>
-          <Icon name="filter" size={16} color="#666" />
-        </TouchableOpacity>
       </View>
 
       {/* Content */}
@@ -287,6 +312,14 @@ const ReScanningScreen = ({ onNavigate, onBack }: ReScanningScreenProps) => {
           <Text style={styles.navText}>Profile</Text>
         </TouchableOpacity>
       </View>
+
+      {/* Sidebar */}
+      <Sidebar
+        isVisible={sidebarVisible}
+        onClose={() => setSidebarVisible(false)}
+        onNavigate={onNavigate}
+        onLogout={onLogout}
+      />
     </SafeAreaView>
   )
 }
@@ -297,28 +330,20 @@ const styles = StyleSheet.create({
     backgroundColor: "#f8fafc",
   },
   header: {
-    backgroundColor: "#4A90E2",
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
+    backgroundColor: "#4A90E2",
     paddingHorizontal: 16,
-    paddingTop: 15,
-    paddingBottom: 16,
-    shadowColor: "#4A90E2",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
-    minHeight: 70,
+    paddingVertical: 16,
+    paddingTop: 50,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 4,
   },
-  backButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: "rgba(255,255,255,0.2)",
-    justifyContent: "center",
-    alignItems: "center",
-    transform: [{ rotate: "180deg" }],
+  menuButton: {
+    padding: 8,
   },
   headerTitle: {
     fontSize: 18,
@@ -332,110 +357,88 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   notificationButton: {
+    padding: 8,
+    marginLeft: "auto",
     marginRight: 12,
   },
-  profileImage: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: "rgba(255,255,255,0.2)",
-    justifyContent: "center",
-    alignItems: "center",
+  profileButton: {
+    padding: 8,
   },
-  tabContainer: {
-    flexDirection: "row",
-    backgroundColor: "white",
-    marginHorizontal: 16,
-    marginTop: 16,
-    borderRadius: 8,
-    padding: 4,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+  // Status Cards Section - Matching Container Staging design
+  statusSection: {
+    paddingHorizontal: 20,
+    paddingTop: 20,
   },
-  tab: {
-    flex: 1,
-    paddingVertical: 12,
-    alignItems: "center",
-    borderRadius: 6,
+  statusScrollView: {
+    flexDirection: 'row',
   },
-  activeTab: {
-    backgroundColor: "#4A90E2",
-  },
-  tabText: {
-    fontSize: 14,
-    fontWeight: "500",
-    color: "#666",
-  },
-  activeTabText: {
-    color: "white",
-  },
-  statsContainer: {
-    flexDirection: "row",
-    paddingHorizontal: 16,
-    paddingTop: 16,
-    justifyContent: "space-between",
-  },
-  statCard: {
-    backgroundColor: "white",
+  statusCard: {
+    width: 110,
+    padding: 14,
     borderRadius: 12,
-    padding: 16,
-    flex: 1,
-    marginHorizontal: 4,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
+    marginRight: 12,
+    alignItems: 'center',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowRadius: 2,
   },
-  statHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+  statusIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: 8,
   },
-  statLabel: {
+  statusTitle: {
     fontSize: 12,
-    color: "#666",
-    fontWeight: "500",
+    color: '#666',
+    marginBottom: 4,
+    textAlign: 'center',
   },
-  statIcon: {
-    fontSize: 16,
-  },
-  statCount: {
+  statusCount: {
     fontSize: 24,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
-  newRequestContainer: {
-    paddingHorizontal: 16,
-    paddingTop: 16,
+  // List Header Section
+  listHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    marginTop: 30,
+    marginBottom: 15,
+  },
+  listTitleContainer: {
+    flex: 1,
+  },
+  listTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#333',
   },
   newRequestButton: {
-    backgroundColor: "#4A90E2",
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#4A90E2',
+    paddingHorizontal: 16,
+    paddingVertical: 10,
     borderRadius: 8,
-    paddingVertical: 14,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    shadowColor: "#4A90E2",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 4,
   },
   newRequestText: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "600",
-    marginLeft: 8,
+    color: 'white',
+    fontSize: 14,
+    fontWeight: '500',
+    marginLeft: 6,
   },
   searchContainer: {
     flexDirection: "row",
-    paddingHorizontal: 16,
-    paddingTop: 16,
     alignItems: "center",
+    paddingHorizontal: 20,
+    marginBottom: 15,
+    gap: 12,
   },
   searchBox: {
     flex: 1,
@@ -445,7 +448,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 10,
-    marginRight: 8,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
@@ -467,6 +469,38 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 2,
     elevation: 2,
+  },
+  // Tab Navigation Styles
+  tabContainer: {
+    flexDirection: "row",
+    backgroundColor: "white",
+    marginHorizontal: 20,
+    marginBottom: 15,
+    borderRadius: 8,
+    padding: 4,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  tabButton: {
+    flex: 1,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 6,
+    alignItems: "center",
+  },
+  activeTabButton: {
+    backgroundColor: "#4A90E2",
+  },
+  tabText: {
+    fontSize: 14,
+    fontWeight: "500",
+    color: "#666",
+  },
+  activeTabText: {
+    color: "white",
   },
   content: {
     flex: 1,

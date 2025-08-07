@@ -1,12 +1,14 @@
 "use client"
 
 import { useState } from "react"
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput } from "react-native"
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, SafeAreaView, StatusBar } from "react-native"
 import Icon from "../components/Icon"
+import Sidebar from "../components/Sidebar"
 
 interface PriorityMovementScreenProps {
   onNavigate: (screen: string) => void
   onBack: () => void
+  onLogout?: () => void
 }
 
 interface RequestEntry {
@@ -22,14 +24,45 @@ interface RequestEntry {
   remarks: string
 }
 
-const PriorityMovementScreen = ({ onNavigate, onBack }: PriorityMovementScreenProps) => {
+const PriorityMovementScreen = ({ onNavigate, onBack, onLogout = () => {} }: PriorityMovementScreenProps) => {
+  const [sidebarVisible, setSidebarVisible] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
   const [filterBy, setFilterBy] = useState("All")
 
-  const statsData = [
-    { label: "Approved", count: 24, color: "#4CAF50", icon: "✓" },
-    { label: "Pending", count: 13, color: "#FF9800", icon: "⏳" },
-    { label: "In Progress", count: 8, color: "#2196F3", icon: "🔄" }
+  // Status cards data - matching ProformaInvoiceScreen design
+  const priorityMovementStatuses = [
+    {
+      id: 'approved',
+      title: 'Approved',
+      count: 24,
+      color: '#4CAF50',
+      backgroundColor: '#E8F5E8',
+      icon: 'check',
+    },
+    {
+      id: 'pending',
+      title: 'Pending',
+      count: 13,
+      color: '#FF9800',
+      backgroundColor: '#FFF3E0',
+      icon: 'clock',
+    },
+    {
+      id: 'in-progress',
+      title: 'In Progress',
+      count: 8,
+      color: '#2196F3',
+      backgroundColor: '#E3F2FD',
+      icon: 'refresh',
+    },
+    {
+      id: 'rejected',
+      title: 'Rejected',
+      count: 2,
+      color: '#F44336',
+      backgroundColor: '#FFEBEE',
+      icon: 'close',
+    },
   ]
 
   const requestEntries: RequestEntry[] = [
@@ -101,35 +134,54 @@ const PriorityMovementScreen = ({ onNavigate, onBack }: PriorityMovementScreenPr
     return matchesSearch && matchesFilter
   })
 
+  const renderStatusCard = (status: any) => (
+    <TouchableOpacity
+      key={status.id}
+      style={[styles.statusCard, { backgroundColor: status.backgroundColor }]}
+      activeOpacity={0.7}
+    >
+      <View style={[styles.statusIcon, { backgroundColor: status.color }]}>
+        <Icon name={status.icon} size={20} color="white" />
+      </View>
+      <Text style={styles.statusTitle}>{status.title}</Text>
+      <Text style={[styles.statusCount, { color: status.color }]}>{status.count}</Text>
+    </TouchableOpacity>
+  )
+
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="light-content" backgroundColor="#4A90E2" />
+
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={onBack}>
-          <Icon name="arrowright" size={20} color="white" />
+        <TouchableOpacity onPress={() => setSidebarVisible(true)} style={styles.menuButton}>
+          <Icon name="menu" size={24} color="white" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Priority Movement</Text>
-        <View style={styles.headerRight}>
-          <TouchableOpacity style={styles.notificationButton}>
-            <Icon name="bell" size={20} color="white" />
-          </TouchableOpacity>
-          <View style={styles.profileImage}>
-            <Icon name="user" size={16} color="white" />
-          </View>
+        <TouchableOpacity style={styles.notificationButton}>
+          <Icon name="notifications" size={24} color="white" />
+        </TouchableOpacity>
+        <View style={styles.profileButton}>
+          <Icon name="user" size={24} color="white" />
         </View>
       </View>
 
-      {/* Stats Cards */}
-      <View style={styles.statsContainer}>
-        {statsData.map((stat, index) => (
-          <View key={index} style={styles.statCard}>
-            <View style={styles.statHeader}>
-              <Text style={styles.statLabel}>{stat.label}</Text>
-              <Text style={styles.statIcon}>{stat.icon}</Text>
-            </View>
-            <Text style={[styles.statCount, { color: stat.color }]}>{stat.count}</Text>
-          </View>
-        ))}
+      {/* Status Cards */}
+      <View style={styles.statusSection}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.statusScrollView}>
+          {priorityMovementStatuses.map(renderStatusCard)}
+        </ScrollView>
+      </View>
+
+      {/* List Header */}
+      <View style={styles.listHeader}>
+        <View style={styles.listTitleContainer}>
+          <Text style={styles.listTitle}>Priority Movement Requests</Text>
+        </View>
+        <TouchableOpacity style={styles.newRequestButton} onPress={() => onNavigate("create-priority-movement")}>
+          <Icon name="plus" size={16} color="white" />
+          <Text style={styles.newRequestText}>New Request</Text>
+        </TouchableOpacity>
       </View>
 
       {/* Search and Filter */}
@@ -138,39 +190,18 @@ const PriorityMovementScreen = ({ onNavigate, onBack }: PriorityMovementScreenPr
           <Icon name="search" size={16} color="#666" />
           <TextInput
             style={styles.searchInput}
-            placeholder="Search entries..."
+            placeholder="Search priority movements..."
             placeholderTextColor="#999"
             value={searchQuery}
             onChangeText={setSearchQuery}
           />
         </View>
-        <TouchableOpacity style={styles.filterButton}>
-          <Icon name="filter" size={16} color="#666" />
-        </TouchableOpacity>
-      </View>
-
-      {/* Filter Row */}
-      <View style={styles.filterRow}>
-        <Text style={styles.filterLabel}>Filter by:</Text>
-        <View style={styles.filterOptions}>
-          {["All", "Approved", "Pending", "In Progress", "Rejected"].map((option) => (
-            <TouchableOpacity
-              key={option}
-              style={[styles.filterOption, filterBy === option && styles.activeFilterOption]}
-              onPress={() => setFilterBy(option)}
-            >
-              <Text style={[styles.filterOptionText, filterBy === option && styles.activeFilterOptionText]}>
-                {option}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-        <Text style={styles.resultsCount}>{filteredEntries.length} results</Text>
       </View>
 
       {/* Content */}
-        
-            {filteredEntries.map((entry, index) => (
+      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+        <View style={styles.requestsList}>
+          {filteredEntries.map((entry, index) => (
               <View key={index} style={styles.requestCard}>
                 <View style={styles.requestHeader}>
                   <View style={styles.requestIdContainer}>
@@ -228,60 +259,89 @@ const PriorityMovementScreen = ({ onNavigate, onBack }: PriorityMovementScreenPr
                 </View>
               </View>
             ))}
+        </View>
+      </ScrollView>
+
+      {/* Bottom Navigation */}
+      <View style={styles.bottomNavigation}>
+        <TouchableOpacity style={styles.navItem} onPress={() => onNavigate("home")}>
+          <Icon name="home" size={20} color="#666" />
+          <Text style={styles.navText}>Home</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.navItem} onPress={() => onNavigate("dashboard")}>
+          <Icon name="dashboard" size={20} color="#666" />
+          <Text style={styles.navText}>Dashboard</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.navItemCenter} onPress={() => onNavigate("create-order")}>
+          <View style={styles.fabInNav}>
+            <Icon name="plus" size={24} color="white" />
           </View>
-        )}
+        </TouchableOpacity>
 
+        <TouchableOpacity style={styles.navItem} onPress={() => onNavigate("providers")}>
+          <Icon name="logistics" size={20} color="#666" />
+          <Text style={styles.navText}>Provider</Text>
+        </TouchableOpacity>
 
-     
+        <TouchableOpacity style={styles.navItem} onPress={() => onNavigate("profile")}>
+          <Icon name="user" size={20} color="#666" />
+          <Text style={styles.navText}>Profile</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Sidebar */}
+      <Sidebar
+        isVisible={sidebarVisible}
+        onClose={() => setSidebarVisible(false)}
+        onNavigate={onNavigate}
+        onLogout={onLogout}
+      />
+    </SafeAreaView>
+  )
+}
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#f8fafc",
   },
   header: {
-    backgroundColor: "#4A90E2",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#4A90E2',
     paddingHorizontal: 16,
+    paddingVertical: 12,
     paddingTop: 50,
-    paddingBottom: 16,
-    shadowColor: "#4A90E2",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
-  backButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: "rgba(255,255,255,0.2)",
-    justifyContent: "center",
-    alignItems: "center",
-    transform: [{ rotate: "180deg" }],
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "white",
-    flex: 1,
-    textAlign: "center",
-  },
-  headerRight: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  notificationButton: {
+  menuButton: {
+    padding: 8,
     marginRight: 12,
   },
-  profileImage: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: "rgba(255,255,255,0.2)",
-    justifyContent: "center",
-    alignItems: "center",
+  headerTitle: {
+    flex: 1,
+    fontSize: 18,
+    fontWeight: '600',
+    color: 'white',
+    textAlign: 'left',
+  },
+  notificationButton: {
+    padding: 8,
+    marginRight: 12,
+  },
+  profileButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   tabContainer: {
     flexDirection: "row",
@@ -313,57 +373,86 @@ const styles = StyleSheet.create({
   activeTabText: {
     color: "white",
   },
-  statsContainer: {
-    flexDirection: "row",
-    paddingHorizontal: 16,
-    paddingTop: 16,
-    justifyContent: "space-between",
+  // Status Cards Section - Matching ProformaInvoiceScreen exactly
+  statusSection: {
+    paddingHorizontal: 20,
+    paddingTop: 20,
   },
-  statCard: {
-    backgroundColor: "white",
+  statusScrollView: {
+    flexDirection: 'row',
+  },
+  statusCard: {
+    width: 110,
+    padding: 14,
     borderRadius: 12,
-    padding: 16,
-    flex: 1,
-    marginHorizontal: 4,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
+    marginRight: 12,
+    alignItems: 'center',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowRadius: 2,
   },
-  statHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+  statusIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: 8,
   },
-  statLabel: {
+  statusTitle: {
     fontSize: 12,
-    color: "#666",
-    fontWeight: "500",
+    color: '#666',
+    marginBottom: 4,
+    textAlign: 'center',
   },
-  statIcon: {
-    fontSize: 16,
-  },
-  statCount: {
+  statusCount: {
     fontSize: 24,
-    fontWeight: "bold",
+    fontWeight: 'bold',
+  },
+  // List Header Section
+  listHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    marginTop: 30,
+    marginBottom: 15,
+  },
+  listTitleContainer: {
+    flex: 1,
+  },
+  listTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#333',
+  },
+  newRequestButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#4A90E2',
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 8,
+  },
+  newRequestText: {
+    color: 'white',
+    fontSize: 14,
+    fontWeight: '500',
+    marginLeft: 6,
   },
   searchContainer: {
-    flexDirection: "row",
-    paddingHorizontal: 16,
-    paddingTop: 16,
-    alignItems: "center",
+    paddingHorizontal: 20,
+    marginBottom: 15,
   },
   searchBox: {
-    flex: 1,
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "white",
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 10,
-    marginRight: 8,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
@@ -376,16 +465,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#333",
   },
-  filterButton: {
-    backgroundColor: "white",
-    borderRadius: 8,
-    padding: 10,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
-  },
+
   filterRow: {
     flexDirection: "row",
     alignItems: "center",

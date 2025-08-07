@@ -1,15 +1,20 @@
 "use client"
 
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions } from "react-native"
+import { useState } from "react"
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions, StatusBar } from "react-native"
 import Icon from "../components/Icon"
+import Sidebar from "../components/Sidebar"
 
 interface ProfileScreenProps {
   onNavigate: (screen: string) => void
+  onBack: () => void
+  onLogout?: () => void
 }
 
 const { width } = Dimensions.get('window')
 
-const ProfileScreen = ({ onNavigate }: ProfileScreenProps) => {
+const ProfileScreen = ({ onNavigate, onBack, onLogout = () => {} }: ProfileScreenProps) => {
+  const [sidebarVisible, setSidebarVisible] = useState(false)
   const profileStats = [
     { label: "Total Orders", value: "156", icon: "📦", color: "#4A90E2" },
     { label: "Completed", value: "142", icon: "✅", color: "#4CAF50" },
@@ -33,14 +38,19 @@ const ProfileScreen = ({ onNavigate }: ProfileScreenProps) => {
 
   return (
     <View style={styles.container}>
-      {/* Header */}
+      <StatusBar barStyle="light-content" backgroundColor="#4A90E2" />
+
+      {/* Header - Same as ProformaInvoiceScreen */}
       <View style={styles.header}>
-        <View style={styles.headerTop}>
+        <TouchableOpacity onPress={() => setSidebarVisible(true)} style={styles.menuButton}>
           <Icon name="menu" size={24} color="white" />
-          <Text style={styles.headerTitle}>Profile</Text>
-          <TouchableOpacity style={styles.editButton}>
-            <Icon name="edit" size={20} color="white" />
-          </TouchableOpacity>
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Profile</Text>
+        <TouchableOpacity style={styles.notificationButton}>
+          <Icon name="notifications" size={24} color="white" />
+        </TouchableOpacity>
+        <View style={styles.profileButton}>
+          <Icon name="user" size={24} color="white" />
         </View>
       </View>
 
@@ -149,7 +159,7 @@ const ProfileScreen = ({ onNavigate }: ProfileScreenProps) => {
 
       {/* Bottom Navigation */}
       <View style={styles.bottomNav}>
-        <TouchableOpacity style={styles.navItem} onPress={() => onNavigate("home")}>
+        <TouchableOpacity style={styles.navItem} onPress={onBack}>
           <Icon name="home" size={24} color="#999" />
           <Text style={styles.navText}>Home</Text>
         </TouchableOpacity>
@@ -157,18 +167,26 @@ const ProfileScreen = ({ onNavigate }: ProfileScreenProps) => {
           <Icon name="grid" size={24} color="#999" />
           <Text style={styles.navText}>Dashboard</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.addButton} onPress={() => onNavigate("create-order")}>
+        <TouchableOpacity style={styles.addButton} onPress={() => onNavigate("create-proforma-request")}>
           <Icon name="plus" size={24} color="white" />
         </TouchableOpacity>
         <TouchableOpacity style={styles.navItem} onPress={() => onNavigate("providers")}>
           <Icon name="truck" size={24} color="#999" />
           <Text style={styles.navText}>Provider</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.navItem, styles.activeNavItem]}>
+        <TouchableOpacity style={styles.navItem}>
           <Icon name="user" size={24} color="#4A90E2" />
-          <Text style={[styles.navText, styles.activeNavText]}>Profile</Text>
+          <Text style={[styles.navText, { color: "#4A90E2" }]}>Profile</Text>
         </TouchableOpacity>
       </View>
+
+      {/* Sidebar */}
+      <Sidebar
+        isVisible={sidebarVisible}
+        onClose={() => setSidebarVisible(false)}
+        onNavigate={onNavigate}
+        onLogout={onLogout}
+      />
     </View>
   )
 }
@@ -179,35 +197,39 @@ const styles = StyleSheet.create({
     backgroundColor: "#f5f5f5",
   },
   header: {
-    backgroundColor: "#4A90E2",
-    paddingTop: 10,
-    paddingBottom: 24,
-    shadowColor: "#4A90E2",
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 12,
-  },
-  headerTop: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#4A90E2',
+    paddingTop: 50,
+    paddingBottom: 15,
     paddingHorizontal: 20,
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  menuButton: {
+    marginRight: 15,
+    padding: 5,
   },
   headerTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "white",
     flex: 1,
-    textAlign: "center",
+    fontSize: 20,
+    fontWeight: '600',
+    color: 'white',
   },
-  editButton: {
-    padding: 8,
-    borderRadius: 20,
-    backgroundColor: "rgba(255,255,255,0.2)",
+  notificationButton: {
+    marginRight: 15,
+    padding: 5,
+  },
+  profileButton: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   content: {
     flex: 1,
@@ -487,36 +509,41 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   bottomNav: {
-    flexDirection: "row",
-    backgroundColor: "white",
+    flexDirection: 'row',
+    backgroundColor: 'white',
     paddingVertical: 10,
     paddingHorizontal: 20,
-    justifyContent: "space-around",
-    alignItems: "center",
     borderTopWidth: 1,
-    borderTopColor: "#e0e0e0",
+    borderTopColor: '#E0E0E0',
+    elevation: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   navItem: {
-    alignItems: "center",
-  },
-  activeNavItem: {
-    // Active state styling
+    flex: 1,
+    alignItems: 'center',
+    paddingVertical: 8,
   },
   navText: {
     fontSize: 12,
-    color: "#999",
+    color: '#999',
     marginTop: 4,
   },
-  activeNavText: {
-    color: "#4A90E2",
-  },
   addButton: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: "#4A90E2",
-    justifyContent: "center",
-    alignItems: "center",
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: '#4A90E2',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: -20,
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
   },
 })
 
