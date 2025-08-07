@@ -3,13 +3,17 @@
 import { useState } from "react"
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, SafeAreaView, StatusBar } from "react-native"
 import Icon from "../components/Icon"
+import Sidebar from "../components/Sidebar"
 
 interface CreateWeightmentSlipScreenProps {
   onNavigate: (screen: string) => void
   onBack: () => void
+  onLogout?: () => void
 }
 
-const CreateWeightmentSlipScreen = ({ onNavigate, onBack }: CreateWeightmentSlipScreenProps) => {
+const CreateWeightmentSlipScreen = ({ onNavigate, onBack, onLogout = () => {} }: CreateWeightmentSlipScreenProps) => {
+  const [sidebarVisible, setSidebarVisible] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
   const [formData, setFormData] = useState({
     requestId: "",
     orderId: "",
@@ -63,8 +67,8 @@ const CreateWeightmentSlipScreen = ({ onNavigate, onBack }: CreateWeightmentSlip
       <StatusBar barStyle="light-content" backgroundColor="#4A90E2" />
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={onBack}>
-          <Icon name="arrow-left" size={24} color="white" />
+        <TouchableOpacity onPress={() => setSidebarVisible(true)} style={styles.menuButton}>
+          <Icon name="menu" size={24} color="white" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Create Weightment Slip</Text>
         <TouchableOpacity style={styles.notificationButton}>
@@ -72,6 +76,26 @@ const CreateWeightmentSlipScreen = ({ onNavigate, onBack }: CreateWeightmentSlip
         </TouchableOpacity>
         <View style={styles.profileButton}>
           <Icon name="user" size={24} color="white" />
+        </View>
+      </View>
+
+      {/* Search Bar with New Request Button */}
+      <View style={styles.searchSection}>
+        <View style={styles.searchContainer}>
+          <View style={styles.searchWrapper}>
+            <Icon name="search" size={18} color="#666" />
+            <TextInput
+              style={styles.searchInput}
+              placeholder="Search weightment slips..."
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              placeholderTextColor="#999"
+            />
+          </View>
+          <TouchableOpacity style={styles.newRequestButton} onPress={() => onNavigate("create-weightment")}>
+            <Icon name="plus" size={16} color="white" />
+            <Text style={styles.newRequestText}>New Request</Text>
+          </TouchableOpacity>
         </View>
       </View>
 
@@ -342,6 +366,14 @@ const CreateWeightmentSlipScreen = ({ onNavigate, onBack }: CreateWeightmentSlip
           <Text style={styles.navText}>Profile</Text>
         </TouchableOpacity>
       </View>
+
+      {/* Sidebar */}
+      <Sidebar
+        isVisible={sidebarVisible}
+        onClose={() => setSidebarVisible(false)}
+        onNavigate={onNavigate}
+        onLogout={onLogout}
+      />
     </SafeAreaView>
   )
 }
@@ -364,7 +396,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
   },
-  backButton: {
+  menuButton: {
     padding: 8,
     marginRight: 12,
   },
@@ -387,8 +419,48 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  notificationButton: {
-    marginRight: 12,
+  searchSection: {
+    backgroundColor: 'white',
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E0E0E0',
+  },
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  searchWrapper: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F8F9FA',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 14,
+    color: '#333',
+    marginLeft: 8,
+  },
+  newRequestButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#4A90E2',
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 8,
+  },
+  newRequestText: {
+    color: 'white',
+    fontSize: 14,
+    fontWeight: '500',
+    marginLeft: 6,
   },
   profileImage: {
     width: 28,

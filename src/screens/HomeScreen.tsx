@@ -190,6 +190,9 @@ const HomeScreen = ({ onNavigate, onLogout, onNavigateToPriorityMovement }: Home
                   } else if (item.title === "Re-scanning") {
                     onNavigate("rescanning")
                   }
+                  else if (item.title === "Container Staging") {
+                    onNavigate("container-staging")
+                  }
                 }}
               >
                 {/* Gradient overlay effect */}

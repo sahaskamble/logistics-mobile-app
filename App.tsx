@@ -18,6 +18,7 @@ import ReScanningScreen from "./src/screens/ReScanningScreen"
 import CreateReScanningScreen from "./src/screens/CreateReScanningScreen"
 import ContainersManagementScreen from "./src/screens/ContainersManagementScreen"
 import CreateContainerScreen from "./src/screens/CreateContainerScreen"
+import ContainerStagingScreen from "./src/screens/ContainerStagingScreen"
 import CreateOrderScreen from "./src/screens/CreateOrderScreen"
 import MyOrdersScreen from "./src/screens/MyOrdersScreen"
 import CreateNewOrderScreen from "./src/screens/CreateNewOrderScreen"
@@ -270,6 +271,16 @@ const App = () => {
             console.log('Proforma request created:', requestData)
             setCurrentScreen("proforma-invoice")
           }}
+        />
+      case "container-staging":
+      case "3pl-cfs-container-staging":
+      case "3pl-warehouse-container-staging":
+      case "custom-cfs-container-staging":
+      case "custom-warehouse-container-staging":
+        return <ContainerStagingScreen
+          onBack={() => setCurrentScreen("home")}
+          onNavigate={setCurrentScreen}
+          onLogout={handleLogout}
         />
       default:
         return <HomeScreen onNavigate={setCurrentScreen} />

@@ -23,7 +23,6 @@ interface RequestEntry {
 }
 
 const PriorityMovementScreen = ({ onNavigate, onBack }: PriorityMovementScreenProps) => {
-  const [activeTab, setActiveTab] = useState<"Requests" | "Uploads">("Requests")
   const [searchQuery, setSearchQuery] = useState("")
   const [filterBy, setFilterBy] = useState("All")
 
@@ -170,9 +169,7 @@ const PriorityMovementScreen = ({ onNavigate, onBack }: PriorityMovementScreenPr
       </View>
 
       {/* Content */}
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {activeTab === "Requests" && (
-          <View style={styles.requestsList}>
+        
             {filteredEntries.map((entry, index) => (
               <View key={index} style={styles.requestCard}>
                 <View style={styles.requestHeader}>
@@ -234,62 +231,8 @@ const PriorityMovementScreen = ({ onNavigate, onBack }: PriorityMovementScreenPr
           </View>
         )}
 
-        {activeTab === "Uploads" && (
-          <View style={styles.uploadsContainer}>
-            <View style={styles.uploadPlaceholder}>
-              <Icon name="upload" size={48} color="#ccc" />
-              <Text style={styles.uploadPlaceholderText}>Upload documents and files</Text>
-              <TouchableOpacity style={styles.uploadButton}>
-                <Text style={styles.uploadButtonText}>Choose Files</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        )}
-      </ScrollView>
 
-      {/* Bottom Navigation */}
-      <View style={styles.bottomNavigation}>
-        <TouchableOpacity
-          style={styles.navItem}
-          onPress={() => onNavigate("home")}
-        >
-          <Icon name="home" size={20} color="#666" />
-          <Text style={styles.navText}>Home</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.navItem}
-          onPress={() => onNavigate("dashboard")}
-        >
-          <Icon name="dashboard" size={20} color="#666" />
-          <Text style={styles.navText}>Dashboard</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.navItemCenter}>
-          <View style={styles.fabInNav}>
-            <Icon name="plus" size={24} color="white" />
-          </View>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[styles.navItem, styles.activeNavItem]}
-        >
-          <Icon name="logistics" size={20} color="#4A90E2" />
-          <Text style={[styles.navText, styles.activeNavText]}>Provider</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.navItem}
-          onPress={() => onNavigate("profile")}
-        >
-          <Icon name="user" size={20} color="#666" />
-          <Text style={styles.navText}>Profile</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-  )
-}
-
+     
 const styles = StyleSheet.create({
   container: {
     flex: 1,
