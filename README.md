@@ -23,9 +23,7 @@ git clone https://github.com/yourusername/logistics-app.git
 cd logistics-app
 
 Install dependencies:
-yarn install
-# or
-npm install
+yarn install / npm install
 
 Start the development server:
 expo start
